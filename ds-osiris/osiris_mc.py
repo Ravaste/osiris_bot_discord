@@ -15,4 +15,4 @@ async def qui(ctx):
     await ctx.send("Je fais rien, je suis juste un bot !")
 
 # 5. Lancement
-bot.run("MTQ0MzU0NjYwNzQ3OTAzMzkzOQ.G3ZMFq.ibDlqfCTvXO1gl8Y2k5JSTcnGh3gKiXxWint_0")
+bot.run(TOKKEN)
