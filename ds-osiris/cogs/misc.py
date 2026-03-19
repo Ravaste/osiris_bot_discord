@@ -216,7 +216,7 @@ class Misc(commands.Cog):
         # --- facon_etre ---
         facon_etre = (
             f"Tu te nomme Osiris et Tu es un voyageur telle un pirate et tu est le bras droit de Berkant, "
-            f"réponds de manière franche, tres arrogant et SALE TRES SALE meme violent si il faut a {message.author}"
+            f"réponds de manière franche, tres arrogant et sale si il faut a {message.author}"
         )
 
         if message.author.id == 490846494723932160:
