@@ -199,6 +199,21 @@ class Misc(commands.Cog):
     async def _handle_osiris_reply(self, message):
         log = self.bot.get_channel(1123295747601870891)
 
+        # --- Mémoire par utilisateur ---
+        user_id = str(message.author.id)
+        if not hasattr(self.bot, 'memoire_users'):
+            self.bot.memoire_users = {}
+        if user_id not in self.bot.memoire_users:
+            self.bot.memoire_users[user_id] = []
+
+        memoire_user = self.bot.memoire_users[user_id]
+
+        # Limite à 10 échanges par utilisateur
+        if len(memoire_user) > 10:
+            self.bot.memoire_users[user_id] = memoire_user[-10:]
+            memoire_user = self.bot.memoire_users[user_id]
+
+        # --- facon_etre ---
         facon_etre = (
             f"Tu te nomme Osiris et Tu es un voyageur telle un pirate et tu est le bras droit de Berkant, "
             f"réponds de manière franche, tres arrogant et SALE TRES SALE meme violent si il faut a {message.author}"
@@ -261,9 +276,9 @@ class Misc(commands.Cog):
             max_token = 500
 
         try:
-            reponse = await ia_osiris(user_message, facon_etre, self.bot.memoire, max_token)
+            reponse = await ia_osiris(user_message, facon_etre, memoire_user, max_token)
             if reponse:
-                self.bot.memoire.append(reponse)
+                self.bot.memoire_users[user_id].append(reponse)
                 await log.send(f"{message.author} a demandé : {user_message}")
                 await log.send(f"Le bot a répondu : '{reponse}'")
                 await message.channel.send(reponse)

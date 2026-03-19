@@ -1,4 +1,6 @@
 import aiohttp
+import asyncio
+import discord
 from datetime import date, datetime, timedelta
 from datetime import time as dtime
 from zoneinfo import ZoneInfo
@@ -7,20 +9,28 @@ from discord.ext import commands, tasks
 
 
 GROUPES_ADE = {
-    "TP1": "8074",
-    "TP2": "8095"
+    "TP1": {
+        "id_ressource": "8074",
+        "role_id": 1483866719775883314
+    },
+    "TP2": {
+        "id_ressource": "8095",
+        "role_id": 1450905831741587527
+    }
 }
 
 CHANNEL_ADE_ID = 1483397822459019274
 
 heures_envoi = [
-    dtime(hour=7, minute=0, second=0),
-    dtime(hour=20, minute=0, second=0)
+    dtime(hour=7, minute=30, second=0, tzinfo=ZoneInfo("Europe/Paris")),
+    dtime(hour=20, minute=0, second=0, tzinfo=ZoneInfo("Europe/Paris"))
 ]
 
 
-async def obtenir_cours(id_ressource, jours_en_plus=0, nom_groupe=""):
-    date_cible = date.today() + timedelta(days=jours_en_plus)
+async def obtenir_cours(id_ressource, jours_en_plus=0, nom_groupe="", date_cible=None):
+    if date_cible is None:
+        date_cible = date.today() + timedelta(days=jours_en_plus)
+
     date_str = date_cible.strftime("%Y-%m-%d")
 
     url = (
@@ -96,8 +106,16 @@ async def obtenir_cours(id_ressource, jours_en_plus=0, nom_groupe=""):
             print(f"Erreur formatage cours : {e}")
             continue
 
-    temps_txt = "d'aujourd'hui" if jours_en_plus == 0 else "de demain"
-    titre_message = f"**Emploi du temps {temps_txt} - {nom_groupe}**"
+    # Formatage de la date dans le titre
+    jour_semaine = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+    titre_date = f"{jour_semaine[date_cible.weekday()]} {date_cible.strftime('%d/%m/%Y')}"
+
+    if jours_en_plus == 0 and date_cible == date.today():
+        titre_date = f"aujourd'hui ({titre_date})"
+    elif jours_en_plus == 1 and date_cible == date.today() + timedelta(days=1):
+        titre_date = f"demain ({titre_date})"
+
+    titre_message = f"**Emploi du temps du {titre_date} - {nom_groupe}**"
 
     if not liste_cours:
         return f"{titre_message}\nAucun cours prévu !"
@@ -126,37 +144,47 @@ class Ade(commands.Cog):
             heure_actuelle = datetime.now().hour
             jours_ajout = 0 if heure_actuelle < 12 else 1
 
-            for nom_groupe, id_ressource in GROUPES_ADE.items():
+            for nom_groupe, infos in GROUPES_ADE.items():
                 try:
+                    # Mention du rôle
+                    role_mention = f"<@&{infos['role_id']}>"
+                    await channel.send(f"{role_mention} 📅 Emploi du temps :")
+
                     message = await obtenir_cours(
-                        id_ressource=id_ressource,
+                        id_ressource=infos["id_ressource"],
                         jours_en_plus=jours_ajout,
                         nom_groupe=nom_groupe
                     )
                     await channel.send(message)
+                    await channel.send("############################################\n############################################")
+
                 except Exception as e:
                     print(f"Erreur envoi ADE {nom_groupe} : {e}")
                     await channel.send(f"❌ Erreur pour {nom_groupe} : {e}")
+
         except Exception as e:
             print(f"Erreur task ADE : {e}")
 
     @envoyer_emploi_du_temps.error
     async def ade_error(self, error):
         print(f"Erreur tâche ADE : {error}")
-        # La tâche repart automatiquement au prochain créneau
 
     @commands.command(name="ade")
     async def commande_ade(self, ctx, groupe: str = None, quand: str = None):
         """
         Affiche l'emploi du temps d'un groupe.
-        Exemple : Osiris ade TP1
-        Exemple : Osiris ade TP1 demain
+        Exemples :
+        Osiris ade TP1
+        Osiris ade TP1 demain
+        Osiris ade TP1 25/03/2026
+        Osiris ade TP2 01/04/2026
         """
         if groupe is None:
             await ctx.send(
                 "Tu dois préciser le groupe ! Exemples :\n"
                 "`Osiris ade TP1` → aujourd'hui\n"
-                "`Osiris ade TP1 demain` → demain"
+                "`Osiris ade TP1 demain` → demain\n"
+                "`Osiris ade TP1 25/03/2026` → date précise"
             )
             return
 
@@ -164,28 +192,57 @@ class Ade(commands.Cog):
 
         if groupe not in GROUPES_ADE:
             await ctx.send(
-                f"Groupe inconnu : {groupe}. "
+                f"Groupe inconnu : `{groupe}`. "
                 f"Les groupes disponibles sont : TP1, TP2."
             )
             return
 
-        # Déterminer le jour
-        if quand and quand.lower() == "demain":
-            jours_en_plus = 1
-        else:
+        # --- Déterminer la date cible ---
+        date_cible = None
+        jours_en_plus = 0
+
+        if quand is None or quand.lower() == "aujourd'hui":
+            date_cible = date.today()
             jours_en_plus = 0
 
+        elif quand.lower() == "demain":
+            date_cible = date.today() + timedelta(days=1)
+            jours_en_plus = 1
+
+        else:
+            # Tentative de parsing de date au format JJ/MM/AAAA
+            try:
+                date_cible = datetime.strptime(quand, "%d/%m/%Y").date()
+                jours_en_plus = (date_cible - date.today()).days
+            except ValueError:
+                await ctx.send(
+                    f"Format de date invalide : `{quand}`\n"
+                    f"Utilise le format `JJ/MM/AAAA` (ex: `25/03/2026`)"
+                )
+                return
+
+        # Vérification que la date n'est pas trop dans le passé
+        if jours_en_plus < -1:
+            await ctx.send(
+                f"La date `{quand}` est dans le passé !"
+            )
+            return
+
         message_attente = await ctx.send(
-            f"Recherche de l'emploi du temps pour le {groupe}..."
+            f"Recherche de l'emploi du temps pour le **{groupe}**..."
         )
 
         try:
+            infos = GROUPES_ADE[groupe]
             resultat = await obtenir_cours(
-                id_ressource=GROUPES_ADE[groupe],
+                id_ressource=infos["id_ressource"],
                 jours_en_plus=jours_en_plus,
-                nom_groupe=groupe
+                nom_groupe=groupe,
+                date_cible=date_cible
             )
-            await message_attente.edit(content=resultat)
+
+            await message_attente.edit(content=f"{resultat}")
+
         except Exception as e:
             await message_attente.edit(content=f"❌ Erreur inattendue : {e}")
 

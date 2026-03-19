@@ -205,6 +205,7 @@ class Admin(commands.Cog):
             await ctx.send(file=discord.File("gif/made-in-heaven-made-in-heaven-jojo.gif"))
             self.bot.memoire = []
             self.bot.memoire_beber = []
+            self.bot.memoire_users = {}
             await ctx.send("Berkant que c'est-il passé ?")
         else:
             await ctx.send("Que voulez-vous dire pas *Univers reset* ?")
