@@ -126,6 +126,9 @@ class Events(commands.Cog):
         if misc_cog and not misc_cog.changement_status.is_running():
             misc_cog.changement_status.start()
 
+        if misc_cog and not misc_cog.change_color_alternee.is_running():
+            misc_cog.change_color_alternee.start()
+
         ade_cog = self.bot.cogs.get("Ade")
         if ade_cog and not ade_cog.envoyer_emploi_du_temps.is_running():
             ade_cog.envoyer_emploi_du_temps.start()

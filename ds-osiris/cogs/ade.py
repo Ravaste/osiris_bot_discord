@@ -147,7 +147,7 @@ class Ade(commands.Cog):
             for nom_groupe, infos in GROUPES_ADE.items():
                 try:
                     # Mention du rôle
-                    role_mention = f"<@&{infos['role_id']}>"
+                    role_mention = f"."#f"<@&{infos['role_id']}>"
                     await channel.send(f"{role_mention} 📅 Emploi du temps :")
 
                     message = await obtenir_cours(

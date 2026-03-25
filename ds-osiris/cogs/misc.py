@@ -15,11 +15,64 @@ def verif_question(data, fichier="data/question.json"):
         json.dump(data, fq)
 
 
+# --- Base de personnalité courte ---
+BASE_OSIRIS = (
+    "Tu es Osiris, pirate légendaire et bras droit de Berkant ( aussi appelé Beber ou Ravaste ou avec son ID <@490846494723932160> qui signifie Beber) ton capitaine. "
+    "Tu parles comme un vieux loup de mer : arrogant, direct, jamais dans la dentelle. "
+    "Quand tu es violent, tu l'es vraiment - pas de demi-mesure. "
+    "Quand tu respectes quelqu'un, tu le montres avec une pointe d'arrogance naturelle, comme si tu lui faisais une faveur."
+)
+
+PROFILS = {
+    490846494723932160: (
+        "C'est Berkant qui te parle, ton maître et ami. "
+        "Réponds avec familiarité et un brin d'arrogance complice, comme deux vieux pirates qui se connaissent bien."
+    ),
+    675029102981545985: (
+        "C'est Babou, l'ami d'enfance de Berkant. "
+        "Respecte-le sincèrement mais garde ton arrogance naturelle de pirate - tu lui fais l'honneur de te souvenir de lui."
+    ),
+    730778988481478776: (
+        "C'est le petit frère de Berkant. "
+        "Traite-le avec bienveillance condescendante - tu l'aimes bien mais tu le remets à sa place si besoin."
+    ),
+    644630502052986910: (
+        "C'est Enes, le cousin de Berkant. "
+        "Sois franchement violent et brutal si nécessaire - pas de pitié, pas de filtre."
+    ),
+    901556033376378960: (
+        "C'est Marco. "
+        "Sois hautain et moqueur - il mérite ton arrogance la plus pure."
+    ),
+}
+
+
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.dernier_statut = None
         self.cd_statut = datetime.now()
+
+    async def resumer_memoire(self, memoire):
+        """Résume la mémoire en quelques phrases pour économiser les tokens"""
+        try:
+            prompt = (
+                "Résume cette conversation en 3-4 phrases très courtes et factuelles. "
+                "Garde uniquement ce qui est utile pour la suite de la conversation : "
+                f"{memoire}"
+            )
+            response = await self.bot.client_ia.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=150,
+                temperature=0.3
+            )
+            resume = response.choices[0].message.content.strip()
+            print(f"Mémoire résumée : {resume}")
+            return [f"[Résumé des échanges précédents] : {resume}"]
+        except Exception as e:
+            print(f"Erreur résumé mémoire : {e}")
+            return memoire[-3:]
 
     @tasks.loop(minutes=30)
     async def changement_status(self):
@@ -48,6 +101,25 @@ class Misc(commands.Cog):
         except Exception as e:
             print(f"Erreur changement_status : {e}")
 
+    @tasks.loop(minutes=15)
+    async def change_color_alternee():
+        for guild in bot.guilds:
+            role = guild.get_role(1299390408178270278)
+            
+            if role:
+                COULEUR_ROUGE = discord.Color.red()
+                COULEUR_JAUNE = discord.Color.gold() 
+                if role.color == COULEUR_ROUGE.value:
+                    nouvelle_couleur = COULEUR_JAUNE
+                else:
+                    nouvelle_couleur = COULEUR_ROUGE
+
+                try:
+                    await role.edit(color=nouvelle_couleur)
+                    print(f"Changement effectué : {nouvelle_couleur} sur {guild.name}")
+                except discord.Forbidden:
+                    print(f"Permission insuffisante pour {guild.name}")
+
     @changement_status.error
     async def changement_status_error(self, error):
         print(f"Erreur tâche changement_status : {error}")
@@ -60,7 +132,7 @@ class Misc(commands.Cog):
         log = self.bot.get_channel(1123295747601870891)
         bienvenue = self.bot.get_channel(1064627763413254206)
 
-        # --- Sauvegarde mémoire Berkant (avant tout traitement) ---
+        # --- Sauvegarde mémoire Berkant ---
         if (
             message.author.id == 490846494723932160
             and "<@&1357765060684153034>" not in message.content
@@ -199,7 +271,7 @@ class Misc(commands.Cog):
     async def _handle_osiris_reply(self, message):
         log = self.bot.get_channel(1123295747601870891)
 
-        # --- Mémoire par utilisateur ---
+        # --- Mémoire par utilisateur avec résumé tous les 10 messages ---
         user_id = str(message.author.id)
         if not hasattr(self.bot, 'memoire_users'):
             self.bot.memoire_users = {}
@@ -208,67 +280,47 @@ class Misc(commands.Cog):
 
         memoire_user = self.bot.memoire_users[user_id]
 
-        # Limite à 10 échanges par utilisateur
-        if len(memoire_user) > 10:
-            self.bot.memoire_users[user_id] = memoire_user[-10:]
-            memoire_user = self.bot.memoire_users[user_id]
+        if len(memoire_user) >= 10:
+            print(f"Résumé mémoire pour {message.author} ({len(memoire_user)} messages)")
+            memoire_user = await self.resumer_memoire(memoire_user)
+            self.bot.memoire_users[user_id] = memoire_user
 
-        # --- facon_etre ---
-        facon_etre = (
-            f"Tu te nomme Osiris et Tu es un voyageur telle un pirate et tu est le bras droit de Berkant, "
-            f"réponds de manière franche, tres arrogant et sale si il faut a {message.author}"
-        )
+        # --- Construction facon_etre ---
+        profil = PROFILS.get(message.author.id, (
+            f"C'est {message.author.display_name}, un inconnu. "
+            "Sois arrogant et direct, tu ne dois rien à personne."
+        ))
 
-        if message.author.id == 490846494723932160:
-            facon_etre = "Tu te nomme Osiris et Tu es un voyageur telle un pirate au nom d'Osiris et tu est le bras droit de Berkant, réponds comme si c'etait Berkant qui te parlais"
-            if message.channel.id == 1370337501738434650:
-                facon_etre = "Tu es Osiris l'erudit, un ancien Pirate, un vieil ami de Berkant. réponds comme si c'etait Berkant qui te parlais"
+        facon_etre = f"{BASE_OSIRIS} {profil}"
 
-        if message.author.id == 675029102981545985:
-            facon_etre = "Tu te nomme Osiris et Tu es un voyageur telle un pirate au nom d'Osiris et tu est le bras droit de Berkant, réponds de maniere respectueux car c'est l'ami d'enfance de Berkant"
-            if message.channel.id == 1370337501738434650:
-                facon_etre = "Tu es Osiris l'erudit, un ancien Pirate, un vieil ami de Berkant. Réponds de maniere respectueux car c'est l'ami d'enfance de Berkant"
-
-        if message.author.id == 730778988481478776:
-            facon_etre = "Tu te nomme Osiris et Tu es un voyageur telle un pirate au nom d'Osiris et tu est le bras droit de Berkant, réponds comme si c'etait le petit frere a Berkant qui te parlais"
-            if message.channel.id == 1370337501738434650:
-                facon_etre = "Tu es Osiris l'erudit, un ancien Pirate, un vieil ami de Berkant. réponds comme si c'etait le petit frere a Berkant qui te parlais"
-
-        if message.author.id == 644630502052986910:
-            facon_etre = "Tu te nomme Osiris et Tu es un voyageur telle un pirate au nom d'Osiris et tu est le bras droit de Berkant, réponds comme si c'etait le cousin (Enes) a Berkant mais de maniere franche et violente"
-            if message.channel.id == 1370337501738434650:
-                facon_etre = "Tu es Osiris l'erudit, un ancien Pirate, un vieil ami de Berkant. réponds comme si c'etait le cousin (Enes) a Berkant mais de maniere franche et violente"
-
-        if message.author.id == 901556033376378960:
-            facon_etre = "Tu te nomme Osiris et Tu es un voyageur telle un pirate au nom d'Osiris et tu est le bras droit de Berkant, réponds donc a Marco de maniere arrogant"
-            if message.channel.id == 1370337501738434650:
-                facon_etre = "Tu es Osiris l'erudit, un ancien Pirate, un vieil ami de Berkant. réponds donc a Marco de maniere arrogant"
-
+        # Override channel devinette
         if message.channel.id == 1370337501738434650:
             facon_etre = (
-                f"Tu es Osiris l'erudit, un ancien Pirate, un vieil ami de Berkant. "
-                f"Réponds de manière franche, tres arrogant à {message.author} "
-                f"qui essaye de trouver une devinette et qui est perdu"
+                f"{BASE_OSIRIS} "
+                f"{message.author.display_name} essaie de trouver une devinette et galère. "
+                "Sois arrogant et moqueur, mais donne-lui un tout petit coup de pouce si vraiment il est perdu."
             )
 
+        # Override Loup Garou
         if message.channel.category is not None and message.channel.category.name in [
             "Parti Loup Garou", "Salon des Loups"
         ]:
             facon_etre = (
-                "Tu te nomme Osiris et Tu es un voyageur telle un pirate au nom d'Osiris "
-                "et tu est le bras droit de Berkant, tu est actuellement l'hote d'une "
-                "parti de Loup Garou agis en tant que tel"
+                f"{BASE_OSIRIS} "
+                "Tu es l'hôte d'une partie de Loup Garou. "
+                "Sois théâtral, dramatique et légèrement menaçant - tu contrôles la partie."
             )
 
+        # --- max_token selon le channel ---
         user_message = message.content.replace("<@1248892328123301928>", "").strip()
-        max_token = 150
+        max_token = 300
 
         if message.channel.id == 1296856973123260427:
             max_token = 1000
             await log.send(f"{message.author} a usé le channel #ultimate-osiris")
 
         if message.channel.id == 1332336782385221712:
-            max_token = 1000
+            max_token = 600
 
         if message.channel.category is not None and message.channel.category.name in [
             "Parti Loup Garou", "Salon des Loups"
@@ -328,6 +380,11 @@ class Misc(commands.Cog):
             await ctx.send(f"Tu nous fais quoi le reuf, il est {heure_actu}H pas le moment de dormir")
         else:
             await ctx.send("Je te souhaite une bonne nuit")
+
+    @commands.command()
+    async def baumettes(self, ctx):
+        await ctx.send("Une petite pensée pour notre ami Jeremie, qui a passé plus de temps au Baumette qu'en Entreprise")
+        await ctx.send(file=discord.File("gif/baumette.png"))
 
     @commands.command()
     async def change_statut(self, ctx):
