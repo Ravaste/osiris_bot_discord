@@ -50,10 +50,6 @@
 
 ### 🎮 Interactions Twitch
 - **Abordage Dynamique** : Rejoignez n'importe quel chat Twitch instantanément via une commande Discord.
-- **Système de Défis (`!defi`)** : Osiris génère des devinettes de culture générale ultra-difficiles. 
-    - L'IA génère la question et la réponse au format JSON.
-    - Osiris reformule la question avec son style pirate.
-    - Il détecte automatiquement la bonne réponse dans le chat et félicite le vainqueur.
 - **Détection de Mention** : Répond automatiquement lorsqu'on prononce son nom dans le chat.
 
 ### 💻 Contrôle via Discord
