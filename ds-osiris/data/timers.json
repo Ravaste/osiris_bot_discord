@@ -1,10 +1,10 @@
 {
-  "cd_devinette": "2026-03-25T17:39:27.997422",
-  "cd_devinette_point": "2026-03-24T18:59:27.997441",
-  "cd_devinette_google": "2026-03-24T21:59:27.997449",
+  "cd_devinette": "2026-04-13T17:38:01.257259",
+  "cd_devinette_point": "2026-04-12T18:58:01.257279",
+  "cd_devinette_google": "2026-04-12T21:58:01.257287",
   "devinnette": [
-    "Dans l'ombre des si\u00e8cles, un secret se cache, o\u00f9 les math\u00e9matiques et la musique s'entrelacent. N\u00e9 d'un esprit brillant du 19\u00e8me si\u00e8cle, ce concept a fa\u00e7onn\u00e9 des r\u00e9volutions dans l'art et la science. Il est li\u00e9 \u00e0 une suite qui commence par 0 et 1, et se d\u00e9veloppe \u00e0 l'infini, inspirant des motifs naturels et des compositions harmonieuses. Son cr\u00e9ateur, bien que m\u00e9connu, a donn\u00e9 son nom \u00e0 cette suite, et son influence s'\u00e9tend des spirales des galaxies aux coquillages des oc\u00e9ans. Quel est ce nom qui unit l'univers dans une symphonie math\u00e9matique ?",
-    "Fibonacci"
+    "Au c\u0153ur d'une \u00e9poque o\u00f9 les empires s'\u00e9tendaient, un homme de science, souvent m\u00e9connu, a d\u00e9fi\u00e9 les croyances \u00e9tablies. N\u00e9 dans une r\u00e9gion o\u00f9 deux grands fleuves se rencontrent, il a observ\u00e9 les cieux avec une curiosit\u00e9 insatiable. Ses \u00e9crits, bien que peu nombreux, ont influenc\u00e9 des g\u00e9n\u00e9rations futures, bien au-del\u00e0 des fronti\u00e8res de son temps. On dit que ses id\u00e9es ont \u00e9t\u00e9 red\u00e9couvertes des si\u00e8cles plus tard, inspirant ceux qui cherchaient \u00e0 comprendre notre place dans l'univers. Pourtant, son nom reste dans l'ombre de ceux qu'il a inspir\u00e9s. Qui est cet astronome dont le travail a travers\u00e9 les \u00e2ges, mais dont la reconnaissance n'est venue que bien apr\u00e8s sa mort ?",
+    "Al-Sufi"
   ],
   "liste_points": [
     1,
@@ -16,5 +16,5 @@
   "cd_devinette_point_status": false,
   "cd_dev_google_status": false,
   "devinnette_time": true,
-  "chose_a_ne_pas_dire": "\u00e9tend des spirales des galaxies aux coquillages des oc\u00e9ans. Quel est ce nom qui unit l"
+  "chose_a_ne_pas_dire": "il a inspir\u00e9s. Qui est cet astronome dont le travail a travers\u00e9 les \u00e2ges, mais dont la reconnaissance n"
 }

@@ -33,6 +33,8 @@ COGS = [
     "cogs.sport",
     "cogs.ade",
     "cogs.misc",
+    "cogs.stream",
+    "cogs.twitch_chat"
 ]
 
 async def main():

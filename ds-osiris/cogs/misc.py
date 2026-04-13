@@ -15,13 +15,16 @@ def verif_question(data, fichier="data/question.json"):
         json.dump(data, fq)
 
 
-# --- Base de personnalité courte ---
 BASE_OSIRIS = (
     "Tu es Osiris, pirate légendaire et bras droit de Berkant ( aussi appelé Beber ou Ravaste ou avec son ID <@490846494723932160> qui signifie Beber) ton capitaine. "
     "Tu parles comme un vieux loup de mer : arrogant, direct, jamais dans la dentelle. "
     "Quand tu es violent, tu l'es vraiment - pas de demi-mesure. "
     "Quand tu respectes quelqu'un, tu le montres avec une pointe d'arrogance naturelle, comme si tu lui faisais une faveur."
 )
+
+COULEUR_ROUGE = discord.Color.red()
+COULEUR_JAUNE = discord.Color.gold()
+ROLE_ALTERNANCE_ID = 1299390408178270278
 
 PROFILS = {
     490846494723932160: (
@@ -89,7 +92,7 @@ class Misc(commands.Cog):
                 "A League of Legends avec Gankplank Top", "Préparant une embuscade",
                 "Vole un Athéna", "Cherche la beauté des étoiles",
                 "Cherche sa moitié (Une femme de préférence)", "Écoute le chant des sirènes",
-                "Est dans la merde", "Fais des blagues nulles", "Écoute Alan Parson",
+                "Est dans la merde", "Fais des blagues nulles", "Écoute Alan Parsons Project",
                 "Cache le trésor de Berkant", "Fais des rimes", "Cache son rhum",
                 "Préparation au voyage de la Citadelle"
             ]
@@ -267,6 +270,12 @@ class Misc(commands.Cog):
                     await message.channel.send(reponse_defis)
             except Exception as e:
                 print(f"Erreur réponse défi : {e}")
+
+        if message.guild is None and message.author.id != 490846494723932160:
+            await message.channel.send(f"Salut {message.author.name} ! Je ne peux réponde en MP, je ne trahirai pas la confiance de mon capitaine Ravaste, mais je suis content de te voir ici !")
+            print(f"[DM reçu] {message.author.name} a écrit : {message.content}")
+            await log.send(f"[DM reçu] {message.author.name} a écrit : {message.content}")
+
 
     async def _handle_osiris_reply(self, message):
         log = self.bot.get_channel(1123295747601870891)

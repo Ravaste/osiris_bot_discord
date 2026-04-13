@@ -280,6 +280,66 @@ class Admin(commands.Cog):
         except Exception as e:
             await ctx.send(f"❌ Erreur : {e}")
 
+    @commands.command()
+    @commands.is_owner()
+    async def setup_bus(self, ctx):
+        """#Commande Admin - Configure les permissions du Bus partout"""
+        if ctx.author.guild_permissions.administrator:
+            mutedRole = await getMutedRole(ctx)
+            
+            if not mutedRole:
+                await ctx.send("❌ Impossible de trouver le rôle du Bus !")
+                return
+
+            exception_channel_id = 1119696021040156742 
+            
+            await ctx.send("Le bus fait sa tournée d'inspection des salons, merci de patienter... 🚌💨")
+
+            # On boucle sur tous les salons et catégories du serveur
+            for channel in ctx.guild.channels:
+                try:
+                    if channel.id == exception_channel_id:
+                        # Salon exception : on autorise ✅
+                        await channel.set_permissions(mutedRole, send_messages=True, read_messages=True)
+                    else:
+                        # Autres salons : on interdit ❌
+                        await channel.set_permissions(mutedRole, send_messages=False)
+                except discord.Forbidden:
+                    print(f"Manque de permissions pour modifier : {channel.name}")
+                except discord.HTTPException:
+                    print(f"Erreur API Discord sur : {channel.name}")
+
+            await ctx.send("✅ Configuration terminée ! Les accidentés du bus ne pourront plus parler qu'en réanimation.")
+        else:
+            await ctx.send("T'as pas le permis pour conduire le bus mdr")
+
+    @commands.command()
+    @commands.is_owner()
+    async def clear(self, ctx, amount: int, member: discord.Member = None):
+        """#Commande Admin - Supprime un nombre défini de messages (filtre utilisateur optionnel)"""
+        if ctx.author.guild_permissions.manage_messages or ctx.author.guild_permissions.administrator:
+            await ctx.message.delete()
+
+            try:
+                if member:
+                    def check(m):
+                        return m.author == member
+                    
+                    deleted = await ctx.channel.purge(limit=amount, check=check)
+                    confirmation = await ctx.send(f"Capitaine j'ai supprimé `{len(deleted)}` message(s) de {member.mention}.")
+                else:
+                    deleted = await ctx.channel.purge(limit=amount)
+                    confirmation = await ctx.send(f"Capitaine j'ai supprimé `{len(deleted)}` message(s).")
+
+                await confirmation.delete(delay=5)
+
+            except discord.Forbidden:
+                await ctx.send("Je n'ai pas la permission `Gérer les messages` pour faire ça.", delete_after=5)
+            except discord.HTTPException as e:
+                print(f"Erreur commande clear : {e}")
+                await ctx.send("Une erreur est survenue lors de la suppression (les messages datant de plus de 14 jours ne peuvent pas être purgés en masse).", delete_after=5)
+        else:
+            await ctx.send("T'as cru que j'était ta femme de ménage ? T'as pas les perms mdr", delete_after=5)
 
 async def setup(bot):
     await bot.add_cog(Admin(bot))

@@ -21,10 +21,20 @@ GROUPES_ADE = {
 
 CHANNEL_ADE_ID = 1483397822459019274
 
-heures_envoi = [
-    dtime(hour=7, minute=30, second=0, tzinfo=ZoneInfo("Europe/Paris")),
-    dtime(hour=20, minute=0, second=0, tzinfo=ZoneInfo("Europe/Paris"))
-]
+#heures_envoi = [
+#   dtime(hour=7, minute=30, second=0, tzinfo=ZoneInfo("Europe/Paris")),
+#   dtime(hour=20, minute=0, second=0, tzinfo=ZoneInfo("Europe/Paris"))
+#]
+
+#-------------------------------------- STAGE --------------------------------------#
+heure_envoi = dtime(hour=7, minute=30, second=0, tzinfo=ZoneInfo("Europe/Paris"))   #
+heure_debut_stage = datetime(2026, 4, 5, tzinfo=ZoneInfo("Europe/Paris"))           #
+def calculer_jour_stage():                                                          #
+    maintenant = datetime.now(ZoneInfo("Europe/Paris"))                             #
+    delta = maintenant - heure_debut_stage                                          #
+    return delta.days if delta.days >= 0 else 0                                 #
+jour_stage = calculer_jour_stage()                                                  #
+#-----------------------------------------------------------------------------------#
 
 
 async def obtenir_cours(id_ressource, jours_en_plus=0, nom_groupe="", date_cible=None):
@@ -133,12 +143,23 @@ class Ade(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @tasks.loop(time=heures_envoi)
+    @tasks.loop(time=heure_envoi)
     async def envoyer_emploi_du_temps(self):
         channel = self.bot.get_channel(CHANNEL_ADE_ID)
+
+        #-------------------------------------- STAGE --------------------------------------#
+        jour_stage = calculer_jour_stage()                                                  #
+        #-----------------------------------------------------------------------------------#
+
         if not channel:
             print("Channel ADE introuvable !")
             return
+
+        #-------------------------------------- STAGE ------------------------------------------#
+        if channel:                                                                             #
+            await channel.send(f"Bon stage a tous ! C'est le {jour_stage}ème jour de stage !")  #
+            return                                                                              #
+        #---------------------------------------------------------------------------------------#
 
         try:
             heure_actuelle = datetime.now().hour
