@@ -64,13 +64,13 @@
    
 2. Fichier .env a la racine du bot ( a coté du main.py )
 ```bash
-BOT_DISCORD=
-SERPAPI_KEY=
-OPENAI_API_KEY=
-PROJECT=
-ORGANIZATION=
-BOTMC=
-TWITCH_TOKKEN=
-TWITCH_CLIENT_ID=
-TWITCH_CHANNEL_OSIRIS=
+BOT_DISCORD=TonTokenViaLeDiscordDev
+SERPAPI_KEY=Sur le Site de SERPAPI
+OPENAI_API_KEY=SurOpenIA
+PROJECT=OpenIA
+ORGANIZATION=OpenIA
+BOTMC=C'est un Token que tu genere et place dans le RCON dans fichier server.propeties
+TWITCH_TOKKEN=Le Token 
+TWITCH_CLIENT_ID=Le client ID dans la page twitch dev
+TWITCH_CHANNEL_OSIRIS= Le token du compte qui parlera dans le chat on le genere avec des sites ou via URL
 ```
