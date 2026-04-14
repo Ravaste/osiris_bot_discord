@@ -58,7 +58,7 @@ async def ia_devinette():
     #     f"Ne repete aucune question presente dans cette liste : {question_posee}"
     # )
     prompt = (
-        "Genere une devinette de culture generale ultra-difficile, longue et detaillee, "
+        "Genere une devinette de culture generale d'un niveau moyen-dur, longue et detaillee, "
         "sur un fait historique, scientifique ou culturel"
         "La question doit etre formulee avec plusieurs phrases, donnant des indices subtils, mais jamais suffisants pour une recherche directe. "
         "La reponse doit etre precise, courte (1 a 3 mots), et sans ambiguite. "
