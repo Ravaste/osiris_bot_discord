@@ -1,6 +1,6 @@
 # 🏴‍☠️ Osiris - L'Entité Pirate Polyvalente
 
-**Osiris** n'est pas qu'un simple bot Discord. C'est un érudit, un loup de mer arrogant, et le gardien de **La Citadelle**. Propulsé par **GPT-4o**, il gère tout : de la culture générale aux rappels de sport, en passant par la surveillance thermique de mon serveur Minecraft.
+**Osiris** n'est pas qu'un simple bot Discord. C'est un érudit, un loup de mer arrogant, et le gardien de **La Citadelle**. Propulsé par **GPT-4o** et **Whisper**, il gère tout : de la culture générale aux rappels de sport, en passant par l'économie pirate, l'espionnage vocal et la surveillance thermique de mon serveur Minecraft.
 
 ---
 
@@ -8,69 +8,63 @@
 
 ### 🧠 Intelligence Artificielle & Social (`Misc` & `Events`)
 - **Personnalité Contextuelle** : Osiris reconnaît les membres de l'équipage. Il est fidèle à son Capitaine **Berkant (Beber)**, respectueux envers **Babou**, protecteur avec le frère de Beber, mais impitoyable et violent avec **Enes** ou **Marco**.
-- **Mémoire Dynamique** : Capable de résumer ses propres conversations pour garder le fil sans saturer sa mémoire.
-- **Accueil & Adieux** : Accueille les nouveaux moussaillons et rend hommage aux membres qui quittent le navire via des messages générés par l'IA.
+- **Mémoire Dynamique** : Capable de résumer ses propres conversations pour garder le fil sans saturer sa mémoire (GPT-4o).
+- **Accueil Visionnaire** : Accueille les nouveaux moussaillons en analysant leur photo de profil via **IA Vision** pour les humilier sur-mesure dès qu'ils posent un pied sur le pont.
+
+### 💰 Économie Pirate & Justice (`BountyShop` & `Duels`)
+- **Tableau des Primes** : Placez des doublons sur la tête d'un pirate. Les membres peuvent lancer une **Chasse** (mini-jeu de survie textuelle) pour empocher le butin. Système anti-triche inclus (cooldowns et phrases strictes).
+- **Le Marché Noir** : Dépensez vos doublons pour envoyer quelqu'un à la cale (Timeout), placer une malédiction de perroquet, ou s'offrir une grâce présidentielle.
+- **Duels d'Insultes** : Pariez vos doublons dans une joute verbale. Osiris juge l'originalité et la répartie pour désigner le vainqueur qui rafle la mise.
+- **Prescription des Primes** : Les avis de recherche expirent automatiquement après 24h d'inactivité.
+
+### 👁️ L'Observateur des Mers (`Observateur`)
+- **L'Oreille des Abysses** : Transcrit automatiquement les messages vocaux Discord en texte via **OpenAI Whisper** et ajoute un commentaire moqueur sur l'éloquence du pirate.
+- **Juge Musical & Gaming** : Surveille les activités (Spotify, Jeux) et interpelle publiquement ceux qui écoutent du contenu douteux ou passent trop de temps sur League of Legends.
+- **Garde-Chiourme Vocal** : Lâche des punchlines cinglantes au premier misérable qui rejoint un salon vocal vide pour le traiter de chômeur.
 
 ### 🧩 Le Roi des Devinettes (`Devinette`)
-- **Défis Quotidiens** : Une devinette ultra-difficile est générée chaque jour.
-- **Système de Points Dégressif** : 
-    - *Moins d'1h* : 9, 8 ou 7 points.
-    - *Entre 1h et 4h* : 6, 5 ou 4 points (accès à Internet autorisé).
-    - *Après 4h* : 3, 2 ou 1 point (accès total aux recherches).
-- **Résistance aux Crashs** : Sauvegarde l'état des timers et de la question en cours pour reprendre exactement là où il s'est arrêté en cas de redémarrage.
+- **Défis Quotidiens** : Une devinette ultra-difficile générée chaque jour avec pings automatiques des gagnants.
+- **Système de Points Dégressif** : Le gain diminue avec le temps (accès à Internet et indices d'Osiris débloqués par paliers).
+- **Résistance aux Crashs** : Sauvegarde l'état complet (timers, points, répondants) pour ne jamais perdre une session en cours.
 
 ### 🎰 Le Casino du Pirate (`Gambling`)
-- **Le Grand Roll** : Un système de probabilités "complexes" (J'ai juste faire des gros environs) pour obtenir des rôles légendaires.
-- **Loot Table Mythique** :
-    - `Sa Majesté` (0.8%), `Puissance Incontrôlable` (1.5%), `Cœur Pur` (2.5%).
-    - `Le Dernier de l'Époque Oubliée` (0.0001%).
-    - **Alerte Système** : Tomber sur `0.000001%` déclenche une infiltration système (Menace Système). Un admin en gros
+- **Le Grand Roll** : Probabilités complexes pour obtenir des rôles mythiques comme `Sa Majesté` ou `Cœur Pur`.
+- **Menace Système** : Tomber sur le seuil critique (0.000001%) déclenche une alerte admin (Infiltration système).
 
 ### 📅 Gestion du Temps & Scolarité (`Ade`)
-- **Synchronisation ADE** : Récupère automatiquement les emplois du temps de l'Université (AMU) pour les groupes **TP1** et **TP2**.
-- **Rappels Automatiques** : Envoie le planning chaque matin à 7h30 ou la veille au soir.
-- **Suivi de Stage** : Compteur automatique des jours de stage effectués.
+- **Synchronisation ADE** : Récupère les emplois du temps de l'Université (AMU) pour les groupes **TP1** et **TP2**.
+- **Rappels Automatiques** : Envoi du planning chaque matin à 7h30 ou la veille.
+- **Suivi de Stage** : Compteur automatique des jours restants avant la liberté.
 
 ### 🌡️ Administration & Surveillance (`Admin`)
-- **Sentinel Thermique** : Surveille la température CPU du serveur toutes les minutes.
-- **Sécurité Minecraft** : En cas de surchauffe (>80°C), Osiris coupe le serveur Minecraft automatiquement et le relance après 1h de refroidissement.
-- **Le Bus 🚌** : Système de modération "Expéditif". Envoyer quelqu'un "sous le bus" (Mute) avec configuration automatique des permissions du salon de réanimation.
-
-### 🎵 Musique & Audio (`Music`)
-- **Jukebox Pirate** : Lecture de musique via YouTube ou fichiers locaux.
-- **Synthèse Vocale (TTS)** : Osiris peut parler dans le salon vocal avec une voix de pirate grave et rocailleuse (TTS OpenAI).
-- **Invocations** : Commandes spéciales pour invoquer Mahoraga (JJK) ou célébrer l'ange né en enfer (Gogeta).
+- **Sentinel Thermique** : Surveillance CPU en temps réel. Si la température dépasse 80°C, Osiris coupe le serveur Minecraft par sécurité.
+- **Le Bus 🚌** : Système de modération expéditif (Mute) avec gestion automatique des permissions de réanimation.
 
 ### 🏋️ Programme de Sport (`Sport`)
-- **Coaching de 16 semaines** : Un programme évolutif (Full Body & Cardio) qui s'adapte chaque semaine.
-- **Rappels Persistants** : Harcèle le capitaine toutes les 30 minutes jusqu'à ce qu'il confirme avoir terminé sa séance.
+- **Coaching 16 semaines** : Programme évolutif (Full Body & Cardio).
+- **Harcèlement de Motivation** : Rappels toutes les 30 minutes jusqu'à confirmation de la séance par le Capitaine.
 
-### 📺 Alertes de Stream (`Stream`)
-- **Twitch Watch** : Surveille en temps réel les lives de tes streamers favoris (Hideyosh_, Saturnesmile, Flapiix) et envoie une alerte riche (Embed) avec le titre et l'aperçu du live.
-
-### 🎮 Interactions Twitch
-- **Abordage Dynamique** : Rejoignez n'importe quel chat Twitch instantanément via une commande Discord.
-- **Détection de Mention** : Répond automatiquement lorsqu'on prononce son nom dans le chat.
-
-### 💻 Contrôle via Discord
-- **Commandes de Flotte** : Pilotez les mouvements du bot Twitch depuis votre serveur Discord.
-- **Logs en temps réel** : Suivez les activités d'Osiris (connexions, messages reçus, erreurs) directement dans la console.
 ---
 
 ## 🛠 Installation & Setup
 
 1. **Dépendances** :
-   Dans le fichier req.txt
-   
-2. Fichier .env a la racine du bot ( a coté du main.py )
+   Installez les requis via `pip install -r req.txt`. (Nécessite `ffmpeg` pour l'audio).
+
+2. **Fichier .env** (à la racine) :
 ```bash
-BOT_DISCORD=TonTokenViaLeDiscordDev
-SERPAPI_KEY=Sur le Site de SERPAPI
-OPENAI_API_KEY=SurOpenIA
-PROJECT=OpenIA
-ORGANIZATION=OpenIA
-BOTMC=C est juste le token d un 2eme bot discord
-TWITCH_TOKKEN=Le Token 
-TWITCH_CLIENT_ID=Le client ID dans la page twitch dev
-TWITCH_CHANNEL_OSIRIS= Le token du compte qui parlera dans le chat on le genere avec des sites ou via URL
+# DISCORD
+BOT_DISCORD=TonTokenPrincipal
+BOTMC=TokenSecondairePourMinecraft
+SERPAPI_KEY=CleSerpApiPourImages
+
+# OPENAI (GPT-4o, Whisper, Vision, TTS)
+OPENAI_API_KEY=TaCleOpenIA
+PROJECT=ID_Projet
+ORGANIZATION=ID_Organisation
+
+# TWITCH
+TWITCH_TOKKEN=TokenOauthTwitch
+TWITCH_CLIENT_ID=ClientIDTwitch
+TWITCH_CHANNEL_OSIRIS=NomDuCompteCible
 ```
