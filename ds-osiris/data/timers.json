@@ -1,20 +1,24 @@
 {
-  "cd_devinette": "2026-04-13T17:38:01.257259",
-  "cd_devinette_point": "2026-04-12T18:58:01.257279",
-  "cd_devinette_google": "2026-04-12T21:58:01.257287",
+  "cd_devinette": "2026-04-15T17:38:17.392377",
+  "cd_devinette_point": "2026-04-14T18:58:17.392397",
+  "cd_devinette_google": "2026-04-14T21:58:17.392405",
   "devinnette": [
-    "Au c\u0153ur d'une \u00e9poque o\u00f9 les empires s'\u00e9tendaient, un homme de science, souvent m\u00e9connu, a d\u00e9fi\u00e9 les croyances \u00e9tablies. N\u00e9 dans une r\u00e9gion o\u00f9 deux grands fleuves se rencontrent, il a observ\u00e9 les cieux avec une curiosit\u00e9 insatiable. Ses \u00e9crits, bien que peu nombreux, ont influenc\u00e9 des g\u00e9n\u00e9rations futures, bien au-del\u00e0 des fronti\u00e8res de son temps. On dit que ses id\u00e9es ont \u00e9t\u00e9 red\u00e9couvertes des si\u00e8cles plus tard, inspirant ceux qui cherchaient \u00e0 comprendre notre place dans l'univers. Pourtant, son nom reste dans l'ombre de ceux qu'il a inspir\u00e9s. Qui est cet astronome dont le travail a travers\u00e9 les \u00e2ges, mais dont la reconnaissance n'est venue que bien apr\u00e8s sa mort ?",
-    "Al-Sufi"
+    "Consid\u00e9r\u00e9 comme l'un des plus grands esprits de son temps, cet individu a non seulement r\u00e9volutionn\u00e9 la science, mais aussi influenc\u00e9 la philosophie et la math\u00e9matique. N\u00e9 dans un pays d'Europe de l'Ouest \u00e0 une \u00e9poque o\u00f9 les id\u00e9es nouvelles fleurissaient, il est connu pour avoir formul\u00e9 une loi fondamentale qui porte son nom. Cette loi, souvent enseign\u00e9e dans les cours de physique, est li\u00e9e \u00e0 la gravitation et a chang\u00e9 notre compr\u00e9hension de l'univers. Son \u0153uvre a \u00e9t\u00e9 une source d'inspiration pour de nombreux scientifiques qui l'ont suivi, et sa contribution est encore c\u00e9l\u00e9br\u00e9e aujourd'hui. Qui est cet homme dont le nom est souvent associ\u00e9 \u00e0 une pomme tombant d'un arbre ?",
+    "Newton"
   ],
   "liste_points": [
     1,
     2,
     3
   ],
-  "compteur_bonne_rep": 0,
-  "personne_trouve": [],
+  "compteur_bonne_rep": 3,
+  "personne_trouve": [
+    "_liot_t",
+    "ravaste",
+    "._nyxveil_."
+  ],
   "cd_devinette_point_status": false,
   "cd_dev_google_status": false,
   "devinnette_time": true,
-  "chose_a_ne_pas_dire": "il a inspir\u00e9s. Qui est cet astronome dont le travail a travers\u00e9 les \u00e2ges, mais dont la reconnaissance n"
+  "chose_a_ne_pas_dire": "hui. Qui est cet homme dont le nom est souvent associ\u00e9 \u00e0 une pomme tombant d"
 }
