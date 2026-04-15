@@ -32,7 +32,7 @@ heure_debut_stage = datetime(2026, 4, 5, tzinfo=ZoneInfo("Europe/Paris"))       
 def calculer_jour_stage():                                                          #
     maintenant = datetime.now(ZoneInfo("Europe/Paris"))                             #
     delta = maintenant - heure_debut_stage                                          #
-    return delta.days if delta.days >= 0 else 0                                 #
+    return delta.days - 1 if delta.days >= 0 else 0                                 #
 jour_stage = calculer_jour_stage()                                                  #
 #-----------------------------------------------------------------------------------#
 

@@ -98,7 +98,7 @@ class TwitchCog(commands.Cog):
         try:
             canal = self.twitch_client.get_channel(chaine)
             if canal:
-                await canal.send("CAPITAINE RAVASTE LE NAVIRE PREND L'EAU, JE DOIS FUIR ! ( bye bye la team )")
+                await canal.send("CAPITAINE LE NAVIRE PREND L'EAU, JE DOIS FUIR ! ( bye bye la team )")
             await self.twitch_client.part_channels([chaine])
             self.twitch_client.memoire_twitch.clear()
             await ctx.send(f"💨 Osiris a quitté **{chaine}** et vidé sa mémoire.")

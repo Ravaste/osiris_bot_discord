@@ -4,11 +4,12 @@ import os
 import asyncio
 import random
 from datetime import datetime, timedelta
-from discord.ext import commands
+from discord.ext import commands, tasks
 from iaosiris import ia_osiris
 
 SCORE_FILE = "data/scores.json"
 BOUNTY_FILE = "data/bounties.json"
+BOUNTY_TIMERS_FILE = "data/bounty_timers.json" # --- NOUVEAU : Fichier pour le temps ---
 
 RANG_ROLES = {
     50: 1493542016263524412,
@@ -25,6 +26,15 @@ class BountyShop(commands.Cog):
         self.maledictions = set()
         self.bot.osiris_master_id = None
         self.bot.pacte_actif = False
+        
+        self.cooldowns_cibles = {}     
+        self.cooldowns_chasseurs = {}  
+
+        # --- NOUVEAU : Lance la vérification des primes périmées ---
+        self.expire_bounties.start()
+
+    def cog_unload(self):
+        self.expire_bounties.cancel()
 
     def load_json(self, path):
         if os.path.exists(path):
@@ -36,6 +46,42 @@ class BountyShop(commands.Cog):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
             json.dump(data, f, indent=2)
+
+    def reset_timer(self, cid):
+        timers = self.load_json(BOUNTY_TIMERS_FILE)
+        timers[str(cid)] = datetime.now().timestamp() + 86400
+        self.save_json(BOUNTY_TIMERS_FILE, timers)
+
+    @tasks.loop(minutes=30)
+    async def expire_bounties(self):
+        timers = self.load_json(BOUNTY_TIMERS_FILE)
+        bounties = self.load_json(BOUNTY_FILE)
+        now = datetime.now().timestamp()
+        changed = False
+
+        for cid, expire_time in list(timers.items()):
+            if now > expire_time:
+                if bounties.get(cid, 0) > 0:
+                    bounties[cid] = 0
+                    changed = True
+                    
+                    for guild in self.bot.guilds:
+                        member = guild.get_member(int(cid))
+                        if member:
+                            try:
+                                await self.update_roles(member, 0)
+                            except: pass
+                            
+                del timers[cid]
+                changed = True
+
+        if changed:
+            self.save_json(BOUNTY_FILE, bounties)
+            self.save_json(BOUNTY_TIMERS_FILE, timers)
+
+    @expire_bounties.before_loop
+    async def before_expire_bounties(self):
+        await self.bot.wait_until_ready()
 
     async def update_roles(self, member, prime):
         try:
@@ -74,7 +120,7 @@ class BountyShop(commands.Cog):
             return await ctx.send("📜 **Tableau des Primes**\nAucune tête n'est mise à prix. La mer est calme.")
 
         primes_triees = sorted(primes_actives.items(), key=lambda item: item, reverse=True)
-        embed = discord.Embed(title="📜 Tableau des Primes", color=discord.Color.gold())
+        embed = discord.Embed(title="📜 Tableau des Primes", description="*Les primes inactives pendant 24h expirent et sont perdues.*", color=discord.Color.gold())
         
         for index, (user_id, montant) in enumerate(primes_triees, 1):
             membre = ctx.guild.get_member(int(user_id))
@@ -113,6 +159,8 @@ class BountyShop(commands.Cog):
         cid = str(cible.id)
         bounties[cid] = bounties.get(cid, 0) + mise
         self.save_json(BOUNTY_FILE, bounties)
+        
+        self.reset_timer(cid) # --- NOUVEAU : On met à jour le chrono ---
 
         await self.update_roles(cible, bounties[cid])
         await ctx.send(f"💰 **MISE À PRIX !** {ctx.author.display_name} ajoute {mise} doublons sur {cible.mention}.")
@@ -121,6 +169,18 @@ class BountyShop(commands.Cog):
     async def lancer_chasse(self, ctx, cible: discord.Member):
         if 0 <= datetime.now().hour < 6:
             return await ctx.send("⚓ **Osiris dort.** Les traques sont interdites entre minuit et 6h du matin.")
+
+        maintenant = datetime.now()
+        
+        if ctx.author.id in self.cooldowns_chasseurs:
+            if maintenant < self.cooldowns_chasseurs[ctx.author.id]:
+                temps_restant = (self.cooldowns_chasseurs[ctx.author.id] - maintenant).seconds // 60
+                return await ctx.send(f"⚓ Repose-toi, chasseur ! Ton navire doit s'approvisionner pendant encore {temps_restant + 1} minutes.")
+                
+        if cible.id in self.cooldowns_cibles:
+            if maintenant < self.cooldowns_cibles[cible.id]:
+                temps_restant = (self.cooldowns_cibles[cible.id] - maintenant).seconds // 60
+                return await ctx.send(f"🌫️ {cible.display_name} s'est fondu dans la brume. Introuvable pour encore {temps_restant + 1} minutes !")
 
         bounties = self.load_json(BOUNTY_FILE)
         cid = str(cible.id)
@@ -131,6 +191,9 @@ class BountyShop(commands.Cog):
         if cible.id in self.en_chasse or getattr(self.bot, 'osiris_master_id', None) == cible.id:
             return await ctx.send("Cible protégée ou déjà traquée !")
 
+        self.cooldowns_chasseurs[ctx.author.id] = maintenant + timedelta(minutes=10)
+        self.cooldowns_cibles[cible.id] = maintenant + timedelta(minutes=15)
+
         self.en_chasse.append(cible.id)
         phrases_fuite = ["par là qu'ils sont passés", "que le diable m'emporte", "hisso hé", "à l'abordage", "pas de quartier"]
         phrase_survie = random.choice(phrases_fuite)
@@ -138,23 +201,37 @@ class BountyShop(commands.Cog):
         reduction_temps = ((prime - self.seuil_chasse_base) // 20) * 15
         temps_final = max(60, 420 - reduction_temps)
 
-        await ctx.send(f"🚨 **TRAQUE OUVERTE SUR {cible.mention} !**\n💰 Prime : **{prime}**\n⏱️ Temps pour fuir : **{temps_final}s**\nPour survivre, crie : '**{phrase_survie.upper()}**'")
+        await ctx.send(f"🚨 **TRAQUE OUVERTE SUR {cible.mention} !**\n💰 Prime : **{prime}**\n⏱️ Temps pour fuir : **{temps_final}s**\nPour survivre, crie EXACTEMENT : '**{phrase_survie.upper()}**'")
 
-        def check(m): return m.author.id == cible.id and phrase_survie.lower() in m.content.lower()
+        def check(m): 
+            return m.author.id == cible.id and m.content.lower().strip() == phrase_survie.lower()
 
         try:
             await self.bot.wait_for('message', timeout=float(temps_final), check=check)
             self.en_chasse.remove(cible.id)
-            bounties[cid] += max(1, int(bounties[cid] * 0.10))
+            
+            augmentation_brute = int(bounties[cid] * 0.10)
+            bonus_survie = max(10, min(augmentation_brute, 75))
+            bounties[cid] += bonus_survie
+            
             self.save_json(BOUNTY_FILE, bounties)
+            self.reset_timer(cid) # --- NOUVEAU : Survivre remet le timer de la prime à 24h ---
+            
             await self.update_roles(cible, bounties[cid])
-            await ctx.send(f"💨 {cible.mention} s'est échappé ! Sa prime grimpe à **{bounties[cid]}** !")
+            await ctx.send(f"💨 {cible.mention} s'est échappé ! Sa prime grimpe de {bonus_survie} et atteint **{bounties[cid]}** !")
             
         except asyncio.TimeoutError:
-            self.en_chasse.remove(cible.id)
+            if cible.id in self.en_chasse:
+                self.en_chasse.remove(cible.id)
             scores = self.load_json(SCORE_FILE)
             scores[str(ctx.author)] = scores.get(str(ctx.author), 0) + prime
             bounties[cid] = 0
+            
+            timers = self.load_json(BOUNTY_TIMERS_FILE)
+            if cid in timers:
+                del timers[cid]
+                self.save_json(BOUNTY_TIMERS_FILE, timers)
+                
             self.save_json(SCORE_FILE, scores)
             self.save_json(BOUNTY_FILE, bounties)
             await self.update_roles(cible, 0)
@@ -181,6 +258,9 @@ class BountyShop(commands.Cog):
             treasure_cog = self.bot.get_cog("TreasureHunt")
             if treasure_cog and ctx.author.id in treasure_cog.chasses_actives:
                 return await ctx.send("Tu as déjà une carte en main ! Termine ta chasse actuelle avant d'en racheter une.")
+                
+        if p == "grace" and ctx.author.id in self.en_chasse:
+            return await ctx.send("⚔️ **Trop tard pour les pots-de-vin !** Tu es déjà traqué, fuis ou meurs comme un vrai pirate !")
 
         scores[uid] -= prix[p]
         self.save_json(SCORE_FILE, scores)
@@ -203,6 +283,7 @@ class BountyShop(commands.Cog):
         elif p == "marque":
             bounties[cid] = max(50, bounties.get(cid, 0) * 2)
             self.save_json(BOUNTY_FILE, bounties)
+            self.reset_timer(cid) # --- NOUVEAU ---
             await self.update_roles(cible, bounties[cid])
             await ctx.send(f"⚫ **MARQUE NOIRE !** La prime de {cible.mention} a doublé. Elle est de **{bounties[cid]} doublons** !")
             
@@ -219,6 +300,12 @@ class BountyShop(commands.Cog):
             bounties[cid] = bounties.get(cid, 0) + ma_prime
             bounties[str(ctx.author.id)] = 0
             self.save_json(BOUNTY_FILE, bounties)
+            
+            timers = self.load_json(BOUNTY_TIMERS_FILE)
+            if str(ctx.author.id) in timers: del timers[str(ctx.author.id)]
+            timers[cid] = datetime.now().timestamp() + 86400
+            self.save_json(BOUNTY_TIMERS_FILE, timers)
+            
             await self.update_roles(ctx.author, 0)
             await self.update_roles(cible, bounties[cid])
             await ctx.send(f"🏴‍☠️ **TRAHISON !** {ctx.author.mention} a transféré son avis de recherche à {cible.mention} !")
@@ -226,6 +313,12 @@ class BountyShop(commands.Cog):
         elif p == "grace":
             bounties[str(ctx.author.id)] = 0
             self.save_json(BOUNTY_FILE, bounties)
+            
+            timers = self.load_json(BOUNTY_TIMERS_FILE)
+            if str(ctx.author.id) in timers:
+                del timers[str(ctx.author.id)]
+                self.save_json(BOUNTY_TIMERS_FILE, timers)
+                
             await self.update_roles(ctx.author, 0)
             await ctx.send(f"📜 **GRÂCE !** Le casier de {ctx.author.mention} est effacé, sa prime est à 0.")
 

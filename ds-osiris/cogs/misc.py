@@ -104,19 +104,6 @@ class Misc(commands.Cog):
         except Exception as e:
             print(f"Erreur changement_status : {e}")
 
-    @tasks.loop(minutes=15)
-    async def change_color_alternee(self): # AJOUT DE SELF ICI
-        for guild in self.bot.guilds:
-            role = guild.get_role(1299390408178270278)
-            if role:
-                COULEUR_ROUGE = discord.Color.red()
-                COULEUR_JAUNE = discord.Color.gold() 
-                nouvelle_couleur = COULEUR_JAUNE if role.color != COULEUR_ROUGE else COULEUR_ROUGE
-                try:
-                    await role.edit(color=nouvelle_couleur)
-                except discord.Forbidden:
-                    print(f"Permission insuffisante pour {guild.name}")
-
     @changement_status.error
     async def changement_status_error(self, error):
         print(f"Erreur tâche changement_status : {error}")
@@ -129,9 +116,42 @@ class Misc(commands.Cog):
         log = self.bot.get_channel(1123295747601870891)
         bienvenue = self.bot.get_channel(1064627763413254206)
 
-        # ... (Logique mémoire Berkant et Bienvenue identique) ...
+        if (
+            message.author.id == 490846494723932160
+            and "<@&1357765060684153034>" not in message.content
+            and "<@1248892328123301928>" not in message.content
+        ):
+            try:
+                with open("memoire/memoire_berkant.csv", 'r') as memo_berkant:
+                    content = memo_berkant.read().split('$')
+                    if len(content) > 10:
+                        print("Memoire de Berkant trop longue, on la reset")
+                        await log.send("Memoire de Berkant trop longue, on la reset")
+                        with open("memoire/memoire_berkant.csv", 'w') as memo_berkant_w:
+                            memo_berkant_w.write(content[-1])
+                with open("memoire/memoire_berkant.csv", 'a') as memo_berkant:
+                    memo_berkant.write(message.content + '$')
+            except Exception as e:
+                print(f"Erreur sauvegarde mémoire Berkant : {e}")
 
-        # --- Réponse Osiris sur mention ou reply ---
+        if "<@&1357765060684153034>" in message.content:
+            try:
+                with open("memoire/memoire_berkant.csv", 'r') as memo_berkant:
+                    content = memo_berkant.read().split('$')
+                facon_etre = (
+                    f"Tu est désormais Berkant parle comme tel voici des echantillon de comment il parle : {content}, "
+                    "essaye d'imite ce style de parole, d'imiter meme les faute d'orthographe"
+                )
+                user_message = message.content.strip("<@1357765060684153034>").strip()
+                reponse_beber = await ia_osiris(user_message, facon_etre, self.bot.memoire_beber, 1000, 0.3)
+                if reponse_beber:
+                    self.bot.memoire_beber.append(reponse_beber)
+                    await log.send(f"{message.author} a demandé : {user_message}")
+                    await log.send(f"Le bot a répondu : '{reponse_beber}'")
+                    await message.channel.send(reponse_beber)
+            except Exception as e:
+                print(f"Erreur mode Berkant : {e}")
+
         is_reply_to_bot = (
             message.reference and
             isinstance(message.reference.resolved, discord.Message) and
@@ -144,12 +164,116 @@ class Misc(commands.Cog):
             except Exception as e:
                 print(f"Erreur handle_osiris_reply : {e}")
 
-        # ... (Logique Défis identique) ...
+        if (
+            "meilleur anime" in message.content.lower()
+            or "meilleur manga" in message.content.lower()
+            or "meilleur fiction" in message.content.lower()
+        ):
+            await message.channel.send("Un des meilleurs https://fr.dragon-ball-official.com")
 
-    async def _handle_osiris_reply(self, message): # BIEN INDENTÉ ICI
+        if message.channel.id == 1331659117894438974:
+            try:
+                role_invite = discord.utils.get(message.guild.roles, name="Invité au Serveur")
+                if role_invite:
+                    await message.author.add_roles(role_invite, reason="invite")
+                role_citadin = discord.utils.get(message.guild.roles, name="Citadins")
+                if role_citadin:
+                    await message.author.add_roles(role_citadin, reason="invite")
+
+                prompt_accueil = (
+                    "Tu es Osiris, le quartier-maître brutal et arrogant du navire pirate de la Citadelle. "
+                    f"Un nouveau misérable vient de monter à bord. Son pseudo est '{message.author.display_name}'. "
+                    "Tu vas recevoir sa photo de profil en image. Moque-toi ouvertement de son apparence ou de ce que l'image représente. "
+                    "Donne-lui une fausse corvée ingrate et dégoûtante à faire pour gagner sa croûte. "
+                    "Rappelle-lui de jurer fidélité au Capitaine Berkant s'il ne veut pas finir aux requins. "
+                    "Sois sec, cynique, mais drôle (environ 3-4 phrases)."
+                )
+
+                avatar_url = message.author.display_avatar.url if message.author.display_avatar else None
+                
+                if avatar_url:
+                    response = await self.bot.client_ia.chat.completions.create(
+                        model="gpt-4o",
+                        messages=[
+                            {"role": "system", "content": prompt_accueil},
+                            {"role": "user", "content": [
+                                {"type": "text", "text": f"Voici la tête du nouveau rat d'eau douce ({message.author.display_name}). Détruis-le !"},
+                                {"type": "image_url", "image_url": {"url": avatar_url}}
+                            ]}
+                        ],
+                        max_tokens=300,
+                        temperature=0.8
+                    )
+                    full_reply = response.choices.message.content.strip()
+                else:
+                    full_reply = await ia_osiris(
+                        message=f"Fais l'accueil du nouveau : {message.author.display_name}. Il n'a même pas de vraie photo de profil, moque-toi de son invisibilité.", 
+                        facon_etre=prompt_accueil,
+                        memoire=[],
+                        max_token=300
+                    )
+                
+                if full_reply and bienvenue:
+                    await bienvenue.send(f"⚓ **Un nouveau rat monte à bord !** {message.author.mention}\n\n{full_reply}")
+                else:
+                    await log.send("Je n'ai pas réussi à obtenir une réponse pour la bienvenue.")
+            except Exception as e:
+                print(f"Erreur bienvenue : {e}")
+
+        if (
+            ("je participe au defi" in message.content.lower()
+             or "je participe au défi" in message.content.lower())
+            and "osiris" in message.content.lower()
+        ):
+            try:
+                await message.channel.send("Bien que le défi commence alors")
+                self.bot.defis_evoque = await ia_devinette()
+                await log.send(str(self.bot.defis_evoque))
+
+                try:
+                    with open("data/defis.json", 'r') as fd:
+                        data = json.load(fd)
+                except Exception:
+                    data = {}
+
+                if len(data) >= 15:
+                    data = {"0": self.bot.defis_evoque}
+                    print("Le fichier defis.json est plein, on le réinitialise")
+                else:
+                    data[str(len(data))] = self.bot.defis_evoque
+                verif_question(data, "data/defis.json")
+
+                base_question = await ia_osiris(
+                    message=self.bot.defis_evoque,
+                    facon_etre=(
+                        "Tu es Osiris l'erudit, un ancien Pirate, un vieil ami de Berkant. "
+                        "Maintenant, pose la question suivante avec un bon petit contexte, sans donner d'indice."
+                    ),
+                    memoire=[],
+                    max_token=500,
+                    temperement=0.75
+                )
+                await message.channel.send(f"Et bien {message.author.mention} releve cet enigme")
+                await message.channel.send(base_question)
+            except Exception as e:
+                print(f"Erreur défi : {e}")
+
+        if getattr(self.bot, 'defis_evoque', None) is not None:
+            try:
+                if self.bot.defis_evoque.lower() == message.content.lower():
+                    reponse_defis = await ia_osiris(
+                        self.bot.defis_evoque,
+                        f"Tu est Osiris l'erudit, un ancien Pirate un vielle ami de Berkant, "
+                        f"tu avais posée une question mais {message.author.name} a réussi a trouvé "
+                        f"la réponse agis comme tel"
+                    )
+                    await message.channel.send(reponse_defis)
+            except Exception as e:
+                print(f"Erreur réponse défi : {e}")
+
+    async def _handle_osiris_reply(self, message): 
         log = self.bot.get_channel(1123295747601870891)
 
-        # 1. RÉCUPÉRATION DE LA PRIME (Notoriété)
         prime = 0
         if os.path.exists("data/bounties.json"):
             try:
@@ -159,7 +283,6 @@ class Misc(commands.Cog):
             except Exception as e:
                 print(f"Erreur lecture bounties : {e}")
 
-        # 2. DÉTERMINATION DU STATUT IA (Pacte > Notoriété > Base)
         statut_IA = ""
         if getattr(self.bot, 'osiris_master_id', None) == message.author.id:
             statut_IA = (
@@ -174,16 +297,13 @@ class Misc(commands.Cog):
         elif prime >= 50:
             statut_IA = "L'utilisateur est un pirate recherché. Tu reconnais sa valeur montante."
 
-        # 3. RÉCUPÉRATION DU PROFIL
         profil_ami = PROFILS.get(message.author.id, (
             f"C'est {message.author.display_name}, un inconnu. "
             "Sois arrogant et direct, tu ne dois rien à personne."
         ))
 
-        # 4. ASSEMBLAGE FINAL
         facon_etre = f"{BASE_OSIRIS} {statut_IA} {profil_ami}"
 
-        # 5. OVERRIDES DE CANAUX (Devinettes ou Loup Garou)
         if message.channel.id == 1370337501738434650:
             facon_etre = (
                 f"{BASE_OSIRIS} "
@@ -193,7 +313,6 @@ class Misc(commands.Cog):
         elif message.channel.category and message.channel.category.name in ["Parti Loup Garou", "Salon des Loups"]:
             facon_etre = f"{BASE_OSIRIS} Tu es l'hôte d'une partie de Loup Garou. Sois théâtral et menaçant."
 
-        # --- GESTION MÉMOIRE ---
         user_id = str(message.author.id)
         if not hasattr(self.bot, 'memoire_users'):
             self.bot.memoire_users = {}
@@ -205,7 +324,6 @@ class Misc(commands.Cog):
             memoire_user = await self.resumer_memoire(memoire_user)
             self.bot.memoire_users[user_id] = memoire_user
 
-        # --- ENVOI ---
         user_message = message.content.replace("<@1248892328123301928>", "").strip()
         max_token = 300
         if message.channel.id == 1296856973123260427: max_token = 1000
@@ -309,7 +427,6 @@ class Misc(commands.Cog):
         """Génération d'image (en développement)"""
         await ctx.send("❄️ Commande de génération d'image en cours de développement...")
 
-    # --- Slash commands ---
 
     @app_commands.command(name="ping", description="Répond pong")
     async def ping(self, interaction: discord.Interaction):

@@ -223,7 +223,7 @@ class Devinette(commands.Cog):
         if self.bot.devinnette_time and self.bot.devinnette[1].lower() in message.content.lower():
             if message.author.name in self.bot.personne_trouve:
                 await question_pour_osiris.send(
-                    f"Hop hop hop batard vole pas des points comme ça {message.author.mention}"
+                    f"Hop hop hop  vole pas des points comme ça {message.author.mention}"
                 )
                 return
 
