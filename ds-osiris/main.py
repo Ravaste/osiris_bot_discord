@@ -38,7 +38,7 @@ COGS = [
     "cogs.bountyshop",
     "cogs.duel",
     "cogs.treasure"
-    "cogs.observateur"
+    #"cogs.observateur"
 ]
 
 async def main():
