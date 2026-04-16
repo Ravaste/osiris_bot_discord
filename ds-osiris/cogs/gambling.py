@@ -1,6 +1,8 @@
 import discord
 import random
 import re
+import os
+import json
 from datetime import datetime
 from discord.ext import commands
 from role import (
@@ -13,7 +15,21 @@ from role import (
 )
 
 SAUVEGARDE_FILE = "data/sauvegarde.txt"
+SCORES_FILE = "data/scores.json"
 
+def charger_scores():
+    if os.path.exists(SCORES_FILE):
+        try:
+            with open(SCORES_FILE, "r") as f:
+                contenu = f.read().strip()
+                return json.loads(contenu) if contenu else {}
+        except json.JSONDecodeError:
+            return {}
+    return {}
+
+def sauvegarder_scores(scores):
+    with open(SCORES_FILE, "w") as f:
+        json.dump(scores, f, indent=2)
 
 def sauvegarde():
     try:
@@ -33,7 +49,6 @@ def sauvegarde():
         print(f"Erreur lecture sauvegarde : {e}")
         return {}
 
-
 def tempo_roll(roll_origine, roll_mis_a_jour):
     try:
         with open(SAUVEGARDE_FILE, 'w') as file:
@@ -41,7 +56,6 @@ def tempo_roll(roll_origine, roll_mis_a_jour):
     except Exception as e:
         print(f"Erreur écriture sauvegarde : {e}")
     return roll_origine
-
 
 async def nbrRoll(membre, actif=0):
     try:
@@ -57,13 +71,11 @@ async def nbrRoll(membre, actif=0):
         print(f"Erreur nbrRoll : {e}")
         return "1"
 
-
 class Gambling(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     async def attribuer_role(self, ctx, get_role_func, member, reason):
-        """Helper pour attribuer un rôle avec gestion d'erreur"""
         try:
             role = await get_role_func(ctx)
             if role:
@@ -75,15 +87,12 @@ class Gambling(commands.Cog):
 
     @commands.command()
     async def gambling(self, ctx, member: discord.Member, *, reason="Aucune raison n'a été renseigné"):
-        """
-        Pourquoi pas faire un casino dans notre serveur ??? Osiris gambling @mention
-        """
         log = self.bot.get_channel(1123295747601870891)
         taverne = self.bot.get_channel(1342155918309199981)
         partage = self.bot.get_channel(1100478839622225940)
 
         if ctx.channel.id != 1249453012435603496:
-            await ctx.send("On ne joue pas HORS DU CASINO ")
+            await ctx.send("On ne joue pas HORS DU CASINO")
             return
 
         try:
@@ -97,7 +106,8 @@ class Gambling(commands.Cog):
                 victoire = round(random.uniform(0.0000001, 2), 6)
                 await ctx.send(f"T'es activité m'interesse, voila un cadeau de ma part {member.mention}")
 
-            await log.send(f"{member} GAMBLING ! a {datetime.now().strftime('%H:%M')} et a drop : {victoire}%")
+            if log:
+                await log.send(f"{member} GAMBLING ! a {datetime.now().strftime('%H:%M')} et a drop : {victoire}%")
 
             if victoire == 0.000001:
                 skip = 1
@@ -357,14 +367,134 @@ class Gambling(commands.Cog):
 
         except Exception as e:
             print(f"Erreur gambling : {e}")
-            await ctx.send(f"❌ Une erreur s'est produite : {e}")
+            await ctx.send(f"Une erreur s'est produite : {e}")
 
     @commands.command()
     async def roulette(self, ctx, nombre_de_joueur: int):
-        """Choisit un nombre aleatoire entre 1 et ton nombre"""
         gagnant = random.randint(1, nombre_de_joueur)
-        await ctx.send(f"Je choisis the number {str(gagnant)}")
+        await ctx.send(f"Je choisis le numéro {str(gagnant)}")
 
+    @commands.command()
+    async def pachinko(self, ctx, mise: int):
+        print(f"Commande pachinko entendue ! Mise : {mise}")
+        
+        if ctx.channel.id != 1249453012435603496:
+            return await ctx.send("On ne joue pas à ça en dehors du casino, marin d'eau douce !")
+
+        if mise <= 0:
+            return await ctx.send("Tu crois pouvoir parier du vent ? Mise de vrais points !")
+
+        scores = charger_scores()
+        user_name = str(ctx.author)
+        points_actuels = scores.get(user_name, 0)
+
+        if points_actuels < mise:
+            return await ctx.send(f"Tu n'as pas assez de points, misérable ! Tu n'as que **{points_actuels} points**.")
+
+        try:
+            await ctx.send(file=discord.File('gif/domain-hakari.gif'))
+            print("Image domain-hakari.gif envoyée pour pachinko")
+        except Exception as e:
+            print(f"ERREUR IMAGE : Je ne trouve pas le GIF Hakari. Détail : {e}")
+
+        scores[user_name] -= mise
+        print("Commande pachinko : Mise enlevée")
+
+        resultat_multiplicateur = random.choices(
+            [0, 0.5, 1.5, 3, 10],
+            weights=[50.5, 35, 10, 4, 0.5],
+            k=1
+        )[0]
+        print(f"Résultat pachinko : Multiplicateur tiré = {resultat_multiplicateur}")
+
+        gain = int(mise * resultat_multiplicateur)
+        scores[user_name] += gain
+        sauvegarder_scores(scores)
+
+        if resultat_multiplicateur == 0:
+            msg = f"La bille a filé direct dans les abysses... Tu as tout perdu ! (-{mise} pts)"
+            print("Résultat pachinko : Perdu, multiplicateur 0")
+        elif resultat_multiplicateur == 0.5:
+            msg = f"La bille rebondit mal... Tu récupères la moitié de ta mise. (+{gain} pts)"
+            print("Résultat pachinko : Perdu, multiplicateur 0.5")
+        elif resultat_multiplicateur == 1.5:
+            msg = f"Joli coup ! Tu fais un petit bénéfice. (+{gain} pts)"
+            print("Résultat pachinko : Gagné, multiplicateur 1.5")
+        elif resultat_multiplicateur == 3:
+            msg = f"SUPERBE ! La bille tombe dans la zone dorée ! (+{gain} pts)"
+            print("Résultat pachinko : Gagné, multiplicateur 3")
+        else:
+            try:
+                await ctx.send(file=discord.File('gif/jackpot1.gif'))
+                await ctx.send(file=discord.File('gif/hakari_jackpot.gif'))
+            except Exception as e:
+                print(f"ERREUR IMAGE JACKPOT : {e}")
+            msg = f"JACKPOOOOOOT ! Multiplicateur x10 !!! (+{gain} pts)"
+            print("Résultat pachinko : JACKPOT, multiplicateur 10")
+            
+        board = (
+            "🔴 ⬇️ ⬇️\n"
+            "🕳️ 📌 📌 🕳️\n"
+            " 📌 🕳️ 📌 📌\n"
+            "  🕳️ 📌 🕳️ 🕳️\n"
+            "-------------------"
+        )
+        
+        await ctx.send(f"{ctx.author.mention} lâche sa bille pour **{mise} points**...\n\n{board}\n{msg}\n\n Ton nouveau solde : **{scores[user_name]} points**.")
+        print(f"Message final pachinko envoyé avec solde mis à jour : {scores[user_name]} points")
+
+    @commands.command()
+    async def pirateslot(self, ctx, mise: int):
+        if ctx.channel.id != 1249453012435603496:
+            return await ctx.send("On ne joue pas à ça en dehors du casino, marin d'eau douce !")
+
+        if mise <= 0:
+            return await ctx.send("Une vraie mise ou je te jette par-dessus bord !")
+
+        scores = charger_scores()
+        user_name = str(ctx.author)
+        points_actuels = scores.get(user_name, 0)
+
+        if points_actuels < mise:
+            return await ctx.send(f"Tes poches sont vides ! Tu as **{points_actuels} points**.")
+
+        scores[user_name] -= mise
+
+        symboles = ["🍒", "🪙", "💎", "🏴‍☠️", "💀"]
+        
+        s1 = random.choice(symboles)
+        s2 = random.choice(symboles)
+        s3 = random.choice(symboles)
+
+        if s1 == s2 == s3:
+            if s1 == "💀":
+                gain = 0
+                msg_resultat = "TRIPLE CRÂNE ! La malédiction s'abat sur toi. Tu as tout perdu !"
+            elif s1 == "🏴‍☠️":
+                gain = mise * 6
+                msg_resultat = f"LE TRÉSOR DE GOL D. ROGER ! (x6) Tu gagnes **{gain} points** !"
+            else:
+                gain = mise * 3
+                msg_resultat = f"TRIPLE SYMBOLE ! (x3) Tu gagnes **{gain} points** !"
+        elif s1 == s2 or s2 == s3 or s1 == s3:
+            gain = int(mise * 1.5)
+            msg_resultat = f"Deux symboles identiques ! Tu repars avec **{gain} points**."
+        else:
+            gain = 0
+            msg_resultat = "Rien du tout... Ton or appartient au Capitaine maintenant."
+
+        scores[user_name] += gain
+        sauvegarder_scores(scores)
+
+        affichage = (
+            f"**LA MACHINE PIRATE**\n"
+            f"| {s1} | {s2} | {s3} |\n"
+            f"----------------------\n"
+            f"{msg_resultat}\n"
+            f"Ton nouveau solde : **{scores[user_name]} points**."
+        )
+
+        await ctx.send(affichage)
 
 async def setup(bot):
     await bot.add_cog(Gambling(bot))
