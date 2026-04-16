@@ -230,11 +230,6 @@ class Events(commands.Cog):
 
             if taverne and full_reply:
                 await taverne.send(full_reply)
-
-            print("Fin on_ready, attente ntm...")
-            def check(message):
-                return message.content == 'ntm'
-
             try:
                 await self.bot.wait_for('message', timeout=300.0, check=check)
                 if taverne:
