@@ -68,3 +68,83 @@ TWITCH_TOKKEN=TokenOauthTwitch
 TWITCH_CLIENT_ID=ClientIDTwitch
 TWITCH_CHANNEL_OSIRIS=NomDuCompteCible
 ```
+
+
+
+
+
+---
+
+
+
+
+
+# 🏴‍☠️ Osiris - The Versatile Pirate Entity
+
+**Osiris** is no ordinary Discord bot. He is a scholar, an arrogant sea dog, and the guardian of **The Citadel**. Powered by **GPT-4o** and **Whisper**, he handles everything: from general knowledge and workout reminders to pirate economy, voice espionage, and thermal monitoring of my Minecraft server.
+---
+
+## ⚓ Ship Systems (Cogs)
+
+### 🧠 Artificial Intelligence & Social (`Misc` & `Events`)
+- **Contextual Personality**: Osiris recognizes the crew members. He is loyal to his Captain **Berkant (Beber)**, respectful to **Babou**, protective of Beber's brother, but ruthless and violent with **Enes** or **Marco**.
+- **Dynamic Memory**: Capable of summarizing his own conversations to keep track without overloading his memory (GPT-4o).
+- **Visionary Welcome**: Welcomes new deckhands by analyzing their profile picture via **Vision AI** to custom-roast them as soon as they step on deck.
+
+### 💰 Pirate Economy & Justice (`BountyShop` & `Duels`)
+- **Bounty Board**: Place doubloons on a pirate's head. Members can launch a **Hunt** (text-based survival mini-game) to claim the loot. Anti-cheat system included (cooldowns and strict phrasing).
+- **The Black Market**: Spend your doubloons to send someone to the brig (Timeout), cast a parrot's curse, or buy a presidential pardon.
+- **Insult Duels**: Bet your doubloons in a verbal joust. Osiris judges originality and quick wit to declare the winner who takes the pot.
+- **Bounty Expiration**: Wanted posters automatically expire after 24 hours of inactivity.
+
+### 👁️ The Observer of the Seas (`Observateur`)
+- **The Ear of the Abyss**: Automatically transcribes Discord voice messages to text via **OpenAI Whisper** and adds a mocking comment on the pirate's eloquence.
+- **Music & Gaming Judge**: Monitors activities (Spotify, Games) and publicly calls out those listening to questionable content or spending too much time on League of Legends.
+- **Voice Channel Warden**: Drops savage punchlines on the first miserable soul to join an empty voice channel, calling them out for having no life.
+
+### 🧩 The Riddle King (`Devinette`)
+- **Daily Challenges**: An ultra-hard riddle generated every day with automatic pings for the winners.
+- **Degressive Point System**: The reward decreases over time (Internet access and Osiris' hints unlocked in tiers).
+- **Crash Resistance**: Saves the complete state (timers, points, respondents) so an ongoing session is never lost to a blackout.
+
+### 🎰 The Pirate's Casino (`Gambling`)
+- **The Grand Roll**: Complex probabilities to obtain mythical roles like `His Majesty` or `Pure Heart`.
+- **System Threat**: Hitting the critical threshold (0.000001%) triggers an admin alert (System Infiltration).
+
+### 📅 Time Management & Academics (`Ade`)
+- **ADE Sync**: Fetches university schedules (AMU) for the **TP1** and **TP2** groups.
+- **Automatic Reminders**: Sends the schedule every morning at 7:30 AM or the evening before.
+- **Internship Tracker**: Automatic countdown of the days left until freedom.
+
+### 🌡️ Administration & Monitoring (`Admin`)
+- **Thermal Sentinel**: Real-time CPU monitoring. If the temperature exceeds 80°C, Osiris safely shuts down the Minecraft server.
+- **The Bus 🚌**: Expedited moderation system (Mute) with automatic management of revival permissions.
+
+### 🏋️ Workout Program (`Sport`)
+- **16-Week Coaching**: Progressive workout plan (Full Body & Cardio).
+- **Motivational Harassment**: Reminders every 30 minutes until the Captain confirms the workout is done.
+
+---
+
+## 🛠 Installation & Setup
+
+1. **Dependencies**:
+   Install requirements via `pip install -r req.txt`. (Requires `ffmpeg` for audio).
+
+2. **.env File** (at the root):
+```
+# DISCORD
+BOT_DISCORD=YourMainToken
+BOTMC=SecondaryTokenForMinecraft
+SERPAPI_KEY=SerpApiKeyForImages
+
+# OPENAI (GPT-4o, Whisper, Vision, TTS)
+OPENAI_API_KEY=YourOpenAIKey
+PROJECT=Project_ID
+ORGANIZATION=Organization_ID
+
+# TWITCH
+TWITCH_TOKKEN=TwitchOauthToken
+TWITCH_CLIENT_ID=TwitchClientID
+TWITCH_CHANNEL_OSIRIS=TargetAccountName
+```
