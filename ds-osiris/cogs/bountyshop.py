@@ -160,7 +160,7 @@ class BountyShop(commands.Cog):
         bounties[cid] = bounties.get(cid, 0) + mise
         self.save_json(BOUNTY_FILE, bounties)
         
-        self.reset_timer(cid) # --- NOUVEAU : On met à jour le chrono ---
+        self.reset_timer(cid) # --- On met à jour le chrono ---
 
         await self.update_roles(cible, bounties[cid])
         await ctx.send(f"💰 **MISE À PRIX !** {ctx.author.display_name} ajoute {mise} doublons sur {cible.mention}.")
@@ -215,7 +215,7 @@ class BountyShop(commands.Cog):
             bounties[cid] += bonus_survie
             
             self.save_json(BOUNTY_FILE, bounties)
-            self.reset_timer(cid) # --- NOUVEAU : Survivre remet le timer de la prime à 24h ---
+            self.reset_timer(cid) # --- Survivre remet le timer de la prime à 24h ---
             
             await self.update_roles(cible, bounties[cid])
             await ctx.send(f"💨 {cible.mention} s'est échappé ! Sa prime grimpe de {bonus_survie} et atteint **{bounties[cid]}** !")
@@ -283,7 +283,7 @@ class BountyShop(commands.Cog):
         elif p == "marque":
             bounties[cid] = max(50, bounties.get(cid, 0) * 2)
             self.save_json(BOUNTY_FILE, bounties)
-            self.reset_timer(cid) # --- NOUVEAU ---
+            self.reset_timer(cid)
             await self.update_roles(cible, bounties[cid])
             await ctx.send(f"⚫ **MARQUE NOIRE !** La prime de {cible.mention} a doublé. Elle est de **{bounties[cid]} doublons** !")
             
