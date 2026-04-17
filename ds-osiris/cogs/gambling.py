@@ -415,7 +415,7 @@ class Gambling(commands.Cog):
             msg = f"La bille a filé direct dans les abysses... Tu as tout perdu ! (-{mise} pts)"
             print("Résultat pachinko : Perdu, multiplicateur 0")
         elif resultat_multiplicateur == 0.5:
-            msg = f"La bille rebondit mal... Tu récupères la moitié de ta mise. (+{gain} pts)"
+            msg = f"La bille rebondit mal... Tu récupères la moitié de ta mise. (-{gain} pts)"
             print("Résultat pachinko : Perdu, multiplicateur 0.5")
         elif resultat_multiplicateur == 1.5:
             msg = f"Joli coup ! Tu fais un petit bénéfice. (+{gain} pts)"

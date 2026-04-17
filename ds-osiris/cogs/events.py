@@ -213,7 +213,6 @@ class Events(commands.Cog):
         for guild in self.bot.guilds:
             await self.update_member_count(guild)
 
-        # --- Message taverne seulement si pas de restauration ---
         if not timers or timers["cd_devinette"] <= datetime.now():
             print("Génération message taverne...")
             facon_etre = (

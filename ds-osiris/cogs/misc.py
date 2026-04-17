@@ -22,10 +22,6 @@ BASE_OSIRIS = (
     "Quand tu respectes quelqu'un, tu le montres avec une pointe d'arrogance naturelle, comme si tu lui faisais une faveur."
 )
 
-COULEUR_ROUGE = discord.Color.red()
-COULEUR_JAUNE = discord.Color.gold()
-ROLE_ALTERNANCE_ID = 1299390408178270278
-
 PROFILS = {
     490846494723932160: (
         "C'est Berkant qui te parle, ton maître et ami. "
@@ -135,7 +131,7 @@ class Misc(commands.Cog):
         log = self.bot.get_channel(1123295747601870891)
         bienvenue = self.bot.get_channel(1064627763413254206)
 
-        # --- Sauvegarde mémoire Berkant ---
+        # Sauvegarde mémoire Berkant
         if (
             message.author.id == 490846494723932160
             and "<@&1357765060684153034>" not in message.content
@@ -154,7 +150,7 @@ class Misc(commands.Cog):
             except Exception as e:
                 print(f"Erreur sauvegarde mémoire Berkant : {e}")
 
-        # --- Mode Berkant ---
+        # Mode Berkant
         if "<@&1357765060684153034>" in message.content:
             try:
                 with open("memoire/memoire_berkant.csv", 'r') as memo_berkant:
@@ -173,7 +169,7 @@ class Misc(commands.Cog):
             except Exception as e:
                 print(f"Erreur mode Berkant : {e}")
 
-        # --- Réponse Osiris sur mention ou reply ---
+        # Réponse Osiris sur mention ou reply
         is_reply_to_bot = (
             message.reference and
             isinstance(message.reference.resolved, discord.Message) and
@@ -186,7 +182,7 @@ class Misc(commands.Cog):
             except Exception as e:
                 print(f"Erreur handle_osiris_reply : {e}")
 
-        # --- Réponses automatiques ---
+        # Réponses automatiques
         if (
             "meilleur anime" in message.content.lower()
             or "meilleur manga" in message.content.lower()
@@ -219,7 +215,7 @@ class Misc(commands.Cog):
             except Exception as e:
                 print(f"Erreur bienvenue : {e}")
 
-        # --- Défis ---
+        # Défis
         if (
             ("je participe au defi" in message.content.lower()
              or "je participe au défi" in message.content.lower())
@@ -280,7 +276,7 @@ class Misc(commands.Cog):
     async def _handle_osiris_reply(self, message):
         log = self.bot.get_channel(1123295747601870891)
 
-        # --- Mémoire par utilisateur avec résumé tous les 10 messages ---
+        # Mémoire par utilisateur avec résumé tous les 10 messages
         user_id = str(message.author.id)
         if not hasattr(self.bot, 'memoire_users'):
             self.bot.memoire_users = {}
@@ -294,7 +290,7 @@ class Misc(commands.Cog):
             memoire_user = await self.resumer_memoire(memoire_user)
             self.bot.memoire_users[user_id] = memoire_user
 
-        # --- Construction facon_etre ---
+        # Construction facon_etre
         profil = PROFILS.get(message.author.id, (
             f"C'est {message.author.display_name}, un inconnu. "
             "Sois arrogant et direct, tu ne dois rien à personne."

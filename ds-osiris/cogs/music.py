@@ -329,46 +329,5 @@ class Music(commands.Cog):
     async def volume(self, ctx, volume):
         await ctx.send("Pour l'instant j'ai rien ici sert a r de forcer")
 
-    @commands.command(name="parle")
-    async def parle(self, ctx, *, texte: str):
-        """Fais parler Osiris : Osiris parle <ton texte>"""
-        if self.speak_lock.locked():
-            await ctx.send("D'ou tu te permet de me couper la parole ? Je suis pas un bot con fdp")
-            return
-
-        async with self.speak_lock:
-            nom_fichier = Path("speech_pirate.mp3")
-            try:
-                response = await self.bot.client_ia.audio.speech.create(
-                    model="tts-1",
-                    voice="onyx",
-                    input=texte,
-                    instructions=PIRATE_INSTRUCTIONS,
-                )
-                nom_fichier.write_bytes(response.content)
-
-                if ctx.author.voice and ctx.author.voice.channel:
-                    channel = ctx.author.voice.channel
-                    vc = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-                    if not vc or not vc.is_connected():
-                        vc = await channel.connect()
-
-                    source = discord.FFmpegPCMAudio(str(nom_fichier))
-                    vc.play(source)
-
-                    while vc.is_playing():
-                        await asyncio.sleep(0.5)
-
-                    await vc.disconnect()
-                else:
-                    await ctx.send("Je ne compte pas parler seul ! C'est toi le schisophrène pas moi !")
-
-            except Exception as e:
-                await ctx.send(f"Oups j'ai un peu merder ||{e}||")
-            finally:
-                if nom_fichier.exists():
-                    nom_fichier.unlink()
-
-
 async def setup(bot):
     await bot.add_cog(Music(bot))
