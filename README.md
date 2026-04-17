@@ -57,6 +57,7 @@
    Installez les requis via pip install -r req.txt. (Nécessite ffmpeg pour l'audio).
 
 2. **Fichier .env** (à la racine) :
+```
 # DISCORD
 BOT_DISCORD=TonTokenPrincipal
 BOTMC=TokenSecondairePourMinecraft
@@ -71,7 +72,7 @@ ORGANIZATION=ID_Organisation
 TWITCH_TOKKEN=TokenOauthTwitch
 TWITCH_CLIENT_ID=ClientIDTwitch
 TWITCH_CHANNEL_OSIRIS=NomDuCompteCible
-
+```
 ---
 
 # 🏴‍☠️ Osiris - The Versatile Pirate Entity
@@ -133,6 +134,7 @@ TWITCH_CHANNEL_OSIRIS=NomDuCompteCible
    Install requirements via pip install -r req.txt. (Requires ffmpeg for audio).
 
 2. **.env File** (at the root):
+```
 # DISCORD
 BOT_DISCORD=YourMainToken
 BOTMC=SecondaryTokenForMinecraft
@@ -147,3 +149,4 @@ ORGANIZATION=Organization_ID
 TWITCH_TOKKEN=TwitchOauthToken
 TWITCH_CLIENT_ID=TwitchClientID
 TWITCH_CHANNEL_OSIRIS=TargetAccountName
+```
