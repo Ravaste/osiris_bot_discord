@@ -37,8 +37,11 @@ COGS = [
     "cogs.twitch_chat",
     "cogs.bountyshop",
     "cogs.duel",
-    "cogs.treasure"
-    #"cogs.observateur"
+    "cogs.treasure",
+    "cogs.observateur",
+    "cogs.bouteille",
+    "cogs.tts",
+    "cogs.citation"
 ]
 
 async def main():
