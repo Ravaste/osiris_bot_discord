@@ -52,7 +52,7 @@ class Bouteille(commands.Cog):
         if message.channel.id == TAVERNE_ID:
             bouteilles = charger_bouteilles()
             
-            if bouteilles and random.randint(1, 500) == 1:
+            if bouteilles and random.randint(1, 1000) == 1:
                 bouteille_trouvee = bouteilles.pop(0)
                 sauvegarder_bouteilles(bouteilles)
 

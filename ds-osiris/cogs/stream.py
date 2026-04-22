@@ -16,7 +16,7 @@ class Stream(commands.Cog):
         self.twitch_client_secret = TWITCH_TOKKEN
         
         # Liste des chaînes Twitch à surveiller (en minuscules)
-        self.streamers = ["hideyosh_", "saturnesmile", "flapiix"] 
+        self.streamers = ["hideyosh_", "flapiix"] 
         
         self.annonce_channel_id = 1491729454068666368 
 

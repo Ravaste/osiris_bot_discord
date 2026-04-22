@@ -244,7 +244,7 @@ class BountyShop(commands.Cog):
         solde = scores.get(uid, 0)
         p = pouvoir.lower()
         
-        prix = {"cale": 25, "perroquet": 35, "marque": 45, "carte": 50, "trahison": 60, "grace": 70, "tempete": 80, "tempête": 80, "rhum": 90, "pacte": 100}
+        prix = {"cale": 25, "perroquet": 35, "marque": 45, "carte": 50, "trahison": 60, "grace": 70, "tempete": 80, "tempête": 80, "rhum": 90, "pacte": 250}
         
         if p not in prix: return await ctx.send("Cet article n'existe pas.")
         if solde < prix[p]: return await ctx.send(f"Tes poches sont vides ! Il te faut {prix[p]} doublons.")

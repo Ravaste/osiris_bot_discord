@@ -401,8 +401,8 @@ class Gambling(commands.Cog):
         print("Commande pachinko : Mise enlevée")
 
         resultat_multiplicateur = random.choices(
-            [0, 0.5, 1.5, 3, 10],
-            weights=[50.5, 35, 10, 4, 0.5],
+            [0.1, 0.5, 1.5, 3, 10],
+            weights=[45, 34, 15, 5, 1],
             k=1
         )[0]
         print(f"Résultat pachinko : Multiplicateur tiré = {resultat_multiplicateur}")

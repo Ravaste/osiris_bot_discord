@@ -8,45 +8,84 @@ class Observateur(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.juge_activite.start()
+        self.log_channel = self.bot.get_channel(1123295747601870891)
 
     def cog_unload(self):
         self.juge_activite.cancel()
-
-    @tasks.loop(hours=1, minutes=30)
+    
+    @tasks.loop(hours=4, minutes=23)
     async def juge_activite(self):
         try:
+            await self.log_channel.send("Osiris scrute les activités de l'équipage à la recherche de cibles potentielles pour ses moqueries...")
+
+            CIBLES_AUTORISEES = ["ravaste", "labaguette4632", "._nyxveil_.", "_liot_t", "cha.mallow"] 
+
             membres_actifs = []
             for guild in self.bot.guilds:
                 for member in guild.members:
-                    if not member.bot and member.activities:
+                    nom_global = member.name.lower()
+                    nom_serveur = member.display_name.lower() if member.display_name else ""
+
+                    if not member.bot and (nom_global in CIBLES_AUTORISEES or nom_serveur in CIBLES_AUTORISEES) and member.activities:
                         membres_actifs.append(member)
 
             if not membres_actifs:
+                await self.log_channel.send("Aucun membre actif avec une activité détectée parmi les cibles autorisées. Osiris retourne à sa vigie pour l'instant.")
                 return
-
+            
             cible = random.choice(membres_actifs)
-            activite = cible.activities
+            activite = random.choice(cible.activities)
             contexte_activite = ""
+            
+            await self.log_channel.send(f"Osiris observe {cible.display_name}. Activité détectée : {activite.name}")
 
             if isinstance(activite, discord.Spotify):
                 contexte_activite = f"écoute la musique '{activite.title}' de l'artiste '{activite.artist}' sur Spotify."
-            elif isinstance(activite, discord.Game) or isinstance(activite, discord.Activity):
-                contexte_activite = f"joue au jeu '{activite.name}'."
+                
+            elif isinstance(activite, discord.Streaming):
+                contexte_activite = f"fait le pitre en live sur '{activite.platform}' sur '{activite.game}'."
+                
+            elif isinstance(activite, discord.CustomActivity):
+                texte = activite.name if activite.name else ""
+                emoji = activite.emoji if activite.emoji else ""
+                statut = f"{emoji} {texte}".strip()
+                if not statut:
+                    statut = "un statut vide et inutile"
+                contexte_activite = f"affiche fièrement ce statut personnalisé pathétique : '{statut}'."
+                
+            elif isinstance(activite, discord.Game):
+                contexte_activite = f"gâche sa vie sur le jeu '{activite.name}'."
+                
+            elif isinstance(activite, discord.Activity):
+                if activite.type == discord.ActivityType.listening:
+                    contexte_activite = f"écoute '{activite.name}'."
+                elif activite.type == discord.ActivityType.watching:
+                    contexte_activite = f"regarde '{activite.name}'."
+                elif activite.type == discord.ActivityType.competing:
+                    contexte_activite = f"participe à la compétition '{activite.name}'."
+                else:
+                    details = activite.details if hasattr(activite, 'details') and activite.details else ""
+                    contexte_activite = f"est en train d'utiliser : '{activite.name}' ({details})."
             else:
-                return 
+                nom_obscur = getattr(activite, 'name', 'quelque chose d\'incompréhensible')
+                contexte_activite = f"fait une activité tellement bizarre qu'elle s'appelle : '{nom_obscur}'."
 
+            await self.log_channel.send(f"Osiris va juger {cible.display_name} : {contexte_activite}")
+            
             prompt_juge = (
                 f"Tu es Osiris le pirate. Tu épies l'équipage. Tu viens de remarquer que le misérable '{cible.display_name}' {contexte_activite} "
-                "Moque-toi de ses goûts musicaux ou de son addiction à ce jeu en UNE ou DEUX phrases max. Sois cinglant et agressif."
+                "Moque-toi de ce qu'il est en train de faire de manière cinglante et agressive, en UNE ou DEUX phrases max. "
+                "Que ce soit une musique, un jeu, un film, un logiciel (comme coder sur Visual Studio), ou un simple statut textuel ridicule, détruis-le."
             )
 
             roast = await ia_osiris("Juge cette activité.", prompt_juge, [], 150)
             
             canal_taverne = self.bot.get_channel(1342155918309199981) 
             if canal_taverne:
-                await canal_taverne.send(f"**Osiris vous observe...**\n{cible.mention} {roast}")
+                await canal_taverne.send(roast)
 
         except Exception as e:
+            await self.log_channel.send(f"Osiris a rencontré une tempête dans son cerveau IA et n'a pas pu juger l'activité cette fois. {e}")
             print(f"Erreur juge activité : {e}")
 
     @juge_activite.before_loop
