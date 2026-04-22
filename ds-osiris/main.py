@@ -41,7 +41,9 @@ COGS = [
     "cogs.observateur",
     "cogs.bouteille",
     "cogs.tts",
-    "cogs.citation"
+    "cogs.citation",
+    "cogs.attaque",
+    "cogs.espionnage"
 ]
 
 async def main():
