@@ -12,7 +12,6 @@
 - **Accueil Visionnaire** : Accueille les nouveaux moussaillons en analysant leur photo de profil via **IA Vision** pour les humilier sur-mesure dès qu'ils posent un pied sur le pont.
 
 ### 🎙️ Harcèlement Vocal & Mini-Jeux (`Intrusion` & `Citation`)
-- **Intrusion Vocale (TTS)** : Frappe chirurgicale en salon vocal. Osiris génère un audio avec la voix ténébreuse d'OpenAI (`onyx`), hurle un message sur mesure à la cible en pleine session de jeu, et se déconnecte instantanément tel un fantôme.
 - **Le "Qui a dit ça ?"** : Mini-jeu d'archives. Osiris fouille les 5000 derniers messages de la Taverne, ressort une citation hors contexte et génère des boutons interactifs pour que l'équipage devine l'auteur (récompense en points et système anti-spam inclus).
 
 ### 💰 Économie Pirate & Justice (`BountyShop` & `Duels`)
@@ -77,7 +76,7 @@ TWITCH_CHANNEL_OSIRIS=NomDuCompteCible
 
 # 🏴‍☠️ Osiris - The Versatile Pirate Entity
 
-**Osiris** is no ordinary Discord bot. He is a scholar, an arrogant sea dog, and the guardian of **The Citadel**. Powered by **GPT-4o** and **Whisper**, he handles everything: from general knowledge and workout reminders to pirate economy, voice espionage, and thermal monitoring of my Minecraft server.
+**Osiris** is no ordinary Discord bot. He is a scholar, an arrogant sea dog, and the guardian of **The Citadel**. Powered by **Llama 3.1** , he handles everything: from general knowledge and workout reminders to pirate economy, voice espionage, and thermal monitoring of my Minecraft server.
 
 ---
 
@@ -89,7 +88,6 @@ TWITCH_CHANNEL_OSIRIS=NomDuCompteCible
 - **Visionary Welcome**: Welcomes new deckhands by analyzing their profile picture via **Vision AI** to custom-roast them as soon as they step on deck.
 
 ### 🎙️ Voice Harassment & Mini-Games (`Intrusion` & `Citation`)
-- **Voice Intrusion (TTS)**: Surgical strike in voice channels. Osiris generates an audio clip using OpenAI's deep voice (`onyx`), yells a custom message at the target while they are gaming, and disconnects instantly like a ghost.
 - **"Who Said That?"**: Archive mini-game. Osiris digs through the last 5000 messages of the Tavern, pulls a wild out-of-context quote, and generates interactive UI buttons for the crew to guess the author (features point rewards and an anti-spam lock).
 
 ### 💰 Pirate Economy & Justice (`BountyShop` & `Duels`)
