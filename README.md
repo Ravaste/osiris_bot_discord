@@ -1,6 +1,6 @@
 # 🏴‍☠️ Osiris - L'Entité Pirate Polyvalente
 
-**Osiris** n'est pas qu'un simple bot Discord. C'est un érudit, un loup de mer arrogant, et le gardien de **La Citadelle**. Propulsé par **GPT-4o** et **Whisper**, il gère tout : de la culture générale aux rappels de sport, en passant par l'économie pirate, l'espionnage vocal et la surveillance thermique de mon serveur Minecraft.
+**Osiris** n'est pas qu'un simple bot Discord. C'est un érudit, un loup de mer arrogant, et le gardien de **La Citadelle**. Géré par son IA local Llama 3.1 , il gère tout : de la culture générale aux rappels de sport, en passant par l'économie pirate, l'espionnage vocal et la surveillance thermique de mon serveur Minecraft.
 
 ---
 
