@@ -1,17 +1,17 @@
 # 🏴‍☠️ Osiris - L'Entité Pirate Polyvalente
 
-**Osiris** n'est pas qu'un simple bot Discord. C'est un érudit, un loup de mer arrogant, et le gardien de **La Citadelle**. Géré par son IA local Llama 3.1 , il gère tout : de la culture générale aux rappels de sport, en passant par l'économie pirate, l'espionnage vocal et la surveillance thermique de mon serveur Minecraft.
+**Osiris** n'est pas qu'un simple bot Discord. C'est un érudit, un loup de mer arrogant, et le gardien de **La Citadelle**. Géré par son IA local Llama 3.1 , il gère tout : de la culture générale aux rappels de sport, en passant par l'économie pirate, Guet du gaillard et la surveillance thermique de mon serveur Minecraft.
 
 ---
 
 ## ⚓ Les Systèmes de Bord (Cogs)
 
 ### 🧠 Intelligence Artificielle & Social (`Misc` & `Events`)
-- **Personnalité Contextuelle** : Osiris reconnaît les membres de l'équipage. Il est fidèle à son Capitaine **Berkant (Beber)**, respectueux envers **Babou**, protecteur avec le frère de Beber, mais impitoyable et violent avec **Enes** ou **Marco**.
+- **Personnalité Contextuelle** : Osiris reconnaît les membres de l'équipage. Il est fidèle à son Capitaine **Berkant (Beber)**, respectueux envers **Babou**, protecteur avec le frère de Beber, mais impitoyable envers les souffres-douleurs de l'équipage **Enes** et **Marco**.
 - **Mémoire Dynamique** : Capable de résumer ses propres conversations pour garder le fil sans saturer sa mémoire (GPT-4o).
-- **Accueil Visionnaire** : Accueille les nouveaux moussaillons en analysant leur photo de profil via **IA Vision** pour les humilier sur-mesure dès qu'ils posent un pied sur le pont.
+- **Accueil Visionnaire** : Accueille les nouveaux moussaillons en analysant leur photo de profil via **IA Vision** pour les charrier dès qu'ils posent un pied sur le pont.
 
-### 🎙️ Harcèlement Vocal & Mini-Jeux (`Intrusion` & `Citation`)
+### 🎙️ Abordage vocal & Mini-Jeux (`Abordage vocal` & `Citation`)
 - **Le "Qui a dit ça ?"** : Mini-jeu d'archives. Osiris fouille les 5000 derniers messages de la Taverne, ressort une citation hors contexte et génère des boutons interactifs pour que l'équipage devine l'auteur (récompense en points et système anti-spam inclus).
 
 ### 💰 Économie Pirate & Justice (`BountyShop` & `Duels`)
