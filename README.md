@@ -46,14 +46,14 @@
 
 ### 🏋️ Programme de Sport (`Sport`)
 - **Coaching 16 semaines** : Programme évolutif (Full Body & Cardio).
-- **Harcèlement de Motivation** : Rappels toutes les 30 minutes jusqu'à confirmation de la séance par le Capitaine.
+- **Motivation du Capitaine** : Rappels toutes les 30 minutes jusqu'à confirmation de la séance par le Capitaine.
 
 ---
 
 ## 🛠 Installation & Setup
 
 1. **Dépendances** :
-   Installez les requis via pip install -r req.txt. (Nécessite ffmpeg pour l'audio).
+   Installez les requis via pip install -r requierements.txt. (Nécessite ffmpeg pour l'audio).
 
 2. **Fichier .env** (à la racine) :
 ```
